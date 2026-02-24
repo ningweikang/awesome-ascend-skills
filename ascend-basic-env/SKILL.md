@@ -12,4 +12,5 @@ description: Huawei Ascend NPU basic environment master skill. Use for environme
 | Install CANN | [cann-install/](cann-install/SKILL.md) |
 | NPU Commands | [npu-commands/](npu-commands/SKILL.md) |
 | Environment Check | [env-diagnostics/](env-diagnostics/SKILL.md) |
-| Testing | [testing/](testing/SKILL.md) |
+| HCCL Performance Test | [hccl-test/](hccl-test/SKILL.md) |
+| Other Testing | [testing/](testing/SKILL.md) |
