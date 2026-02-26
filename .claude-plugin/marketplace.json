@@ -39,10 +39,10 @@
       "category": "development"
     },
     {
-      "name": "ais-bench",
-      "description": "AI model evaluation tool for Ascend NPU. Supports accuracy evaluation (text, multimodal datasets), performance evaluation (latency, throughput, stress testing), vLLM/Triton inference, 15+ benchmarks (MMLU, GSM8K, MMMU, BFCL), multi-turn dialogue, Function Call, and custom datasets.",
-      "source": "./ais-bench",
-      "category": "testing"
+      "name": "vllm-ascend",
+      "description": "vLLM inference engine for Huawei Ascend NPU. Deploy LLMs with OpenAI-compatible API, offline batch inference, quantized model serving (W4A8, W8A8), tensor/pipeline parallelism for distributed inference, and performance optimization. Supports Qwen, DeepSeek, GLM, LLaMA models with Ascend-optimized kernels.",
+      "source": "./vllm-ascend",
+      "category": "development"
     }
   ]
 }
