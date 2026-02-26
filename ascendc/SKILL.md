@@ -3,17 +3,23 @@ name: ascendc
 description: Guides the agent to develop AscendC transformer GMM-style custom ops (such as grouped_matmul_finalize_routing) and their CANN aclnn examples by following existing patterns under ops-transformer/gmm and attention/softmax_ops/examples. Use when adding or modifying these ops, their kernels, tiling/infershape logic, or CANN API examples.
 ---
 
-# AscendC GMM / 路由类算子开发
+# AscendC Transformer 算子开发
 
-本技能指导 agent 按现有模式开发/修改 AscendC transformer GMM 类算子（如 `grouped_matmul_finalize_routing`）以及对应的 CANN `aclnn_*` 示例代码。
+本技能指导 agent 按现有模式开发/修改 AscendC transformer 相关算子，包括：
+- FFN (Feed Forward Network) 算子
+- GMM (Grouped Matrix Multiplication) 类算子
+- MoE (Mixture of Experts) 路由类算子
+以及对应的 CANN `aclnn_*` 示例代码。
 
 ## 使用时机
 
 在以下场景应用本技能：
 
-- 需要新增或修改 GMM / 路由类 AscendC 算子（例如 Mixture-of-Experts 或 Grouped Matmul 相关）
+- 需要新增或修改 FFN (Feed Forward Network) 相关的 AscendC 算子
+- 需要新增或修改 GMM (Grouped Matrix Multiplication) 类 AscendC 算子
+- 需要新增或修改 MoE (Mixture-of-Experts) 路由类 AscendC 算子
 - 需要为已有 AscendC 算子补充 `op_host` 定义、tiling / infershape 或 `op_kernel` 实现
-- 需要编写类似 `attention/softmax_ops/examples/test_aclnn_softmax_ops.cpp` 的 CANN `aclnn_*` 示例
+- 需要编写类似 `ffn/ffn/examples/test_aclnn_ffn.cpp` 的 CANN `aclnn_*` 示例
 - 需要对这些算子进行对齐、重构或 bug 修复，同时保持与现有算子风格一致
 
 ---
@@ -23,12 +29,18 @@ description: Guides the agent to develop AscendC transformer GMM-style custom op
 当用户要求开发/修改此类算子时，按下面步骤执行（顺序很重要）：
 
 1. **定位参考算子/示例**
-   - 在 `ops-transformer/gmm/`、`ops-transformer/attention/` 下查找：
+   - 根据算子类型，在相应目录下查找：
+     - FFN 算子：`ops-transformer/ffn/`
+     - GMM 算子：`ops-transformer/gmm/`
+     - MoE 算子：`ops-transformer/moe/`
+   - 查找以下类型文件：
      - `*_def.cpp`（算子定义）
      - `*_tiling*.h/.cpp`（tiling、调度逻辑）
      - `op_kernel/*.h`（AscendC kernel 实现）
-   - 在 `attention/softmax_ops/examples/` 或其他 `examples/` 目录下查找对应的 CANN `aclnn_*` 示例，例如：
-     - `test_aclnn_softmax_ops.cpp`
+   - 在对应算子目录下的 `examples/` 子目录中查找 CANN `aclnn_*` 示例，例如：
+     - FFN: `ffn/ffn/examples/test_aclnn_ffn.cpp`
+     - GMM: `gmm/grouped_matmul/examples/`
+     - MoE: `moe/moe_init_routing/examples/`
 
 2. **在 op_host 中定义 Graph 算子接口**
 3. **在 op_kernel 中实现 AscendC kernel（含量化/路由逻辑）**
@@ -43,11 +55,20 @@ description: Guides the agent to develop AscendC transformer GMM-style custom op
 
 ### 必读参考
 
-- Graph 定义参考：
-  - `ops-transformer/gmm/.../op_host/grouped_matmul_finalize_routing_def.cpp`
-- AscendC kernel 实现参考：
-  - `ops-transformer/gmm/.../op_kernel/grouped_matmul_finalize_routing.h`
-- CANN API 示例参考：
+- FFN 算子参考：
+  - Graph 定义：`ops-transformer/ffn/ffn/op_host/ffn_def.cpp`
+  - Tiling 实现：`ops-transformer/ffn/ffn/op_host/ffn_tiling.cpp`
+  - CANN API 示例：`ops-transformer/ffn/ffn/examples/test_aclnn_ffn.cpp`
+
+- GMM 算子参考：
+  - Graph 定义：`ops-transformer/gmm/grouped_matmul/op_host/grouped_matmul_def.cpp`
+  - AscendC kernel 实现：`ops-transformer/gmm/grouped_matmul/op_kernel/grouped_matmul.h`
+
+- MoE 算子参考：
+  - Graph 定义：`ops-transformer/moe/moe_init_routing/op_host/moe_init_routing_def.cpp`
+  - CANN API 示例：`ops-transformer/moe/moe_init_routing/examples/test_aclnn_moe_init_routing.cpp`
+
+- 通用 CANN API 示例参考：
   - `ops-transformer/attention/softmax_ops/examples/test_aclnn_softmax_ops.cpp`
 
 ### 行为规范
@@ -63,11 +84,9 @@ description: Guides the agent to develop AscendC transformer GMM-style custom op
 
 ## 步骤二：在 op_host 中定义算子接口
 
-参考 `grouped_matmul_finalize_routing_def.cpp` 的写法：
-
 ### 关键模式
 
-- 继承 `OpDef`，在 `namespace ops` 内定义类，并使用 `OP_ADD` 注册：
+继承 `OpDef`，在 `namespace ops` 内定义类，并使用 `OP_ADD` 注册：
   - 输入：
     - 使用 `Input("name")` + `.ParamType(REQUIRED/OPTIONAL)`
     - 明确 `.DataType({ ... })`、`.Format({ ... })` 与 `.UnknownShapeFormat({ ... })`
@@ -87,6 +106,104 @@ description: Guides the agent to develop AscendC transformer GMM-style custom op
     - 按芯片型号调用 `this->AICore().AddConfig("ascend910b", config);` 等
   - 末尾用 `OP_ADD(YourOpClassName);` 完成注册
 
+### 算子特定示例
+
+#### FFN 算子（参考 `ffn_def.cpp`）
+
+FFN 算子支持 Feed Forward Network 计算，可选多种激活函数：
+
+```cpp
+// 输入定义
+Input("x")
+    .ParamType(REQUIRED)
+    .DataType({DT_FLOAT16, DT_BF16, DT_INT8})
+    .Format({FORMAT_ND});
+Input("weight1")
+    .ParamType(REQUIRED)
+    .DataType({DT_FLOAT16, DT_BF16, DT_INT8})
+    .Format({FORMAT_ND});
+Input("weight2")
+    .ParamType(REQUIRED)
+    .DataType({DT_FLOAT16, DT_BF16, DT_INT8})
+    .Format({FORMAT_ND});
+Input("bias1")
+    .ParamType(OPTIONAL)
+    .DataType({DT_FLOAT16, DT_BF16, DT_INT32})
+    .Format({FORMAT_ND});
+// 输出定义
+Output("y")
+    .DataType({DT_FLOAT16, DT_BF16, DT_INT8})
+    .Format({FORMAT_ND});
+
+// 属性定义
+Attr("activation").AttrType(OPTIONAL).Int({0}); // 0: GELU, 1: RELU, 2: FASTGELU, 3: SILU, 4: SIGMOID, 5: TANH
+Attr("inner_precise").AttrType(OPTIONAL).Int({0}); // 0: BF16, 1: FLOAT32
+```
+
+#### GMM 算子（参考 `grouped_matmul_def.cpp`）
+
+GMM 算子支持分组矩阵乘法，可配置分组方式和数据类型：
+
+```cpp
+// 输入定义
+Input("x")
+    .ParamType(REQUIRED)
+    .DataType({DT_FLOAT16, DT_BF16, DT_INT8})
+    .Format({FORMAT_ND});
+Input("weight")
+    .ParamType(REQUIRED)
+    .DataType({DT_FLOAT16, DT_BF16, DT_INT8})
+    .Format({FORMAT_ND});
+Input("bias")
+    .ParamType(OPTIONAL)
+    .DataType({DT_FLOAT16, DT_BF16, DT_INT32})
+    .Format({FORMAT_ND});
+
+// 输出定义
+Output("y")
+    .DataType({DT_FLOAT16, DT_BF16, DT_INT32, DT_INT8})
+    .Format({FORMAT_ND});
+
+// 属性定义
+Attr("split_item").AttrType(OPTIONAL).ListInt({}); // 分组信息
+Attr("dtype").AttrType(OPTIONAL).Int({0}); // 0: FLOAT16, 1: BF16, 2: INT8
+Attr("transpose_weight").AttrType(OPTIONAL).Int({0}); // 0: 不转置, 1: 转置
+```
+
+#### MoE 算子（参考 `moe_init_routing_def.cpp`）
+
+MoE 算子支持 Mixture-of-Experts 路由逻辑：
+
+```cpp
+// 输入定义
+Input("x")
+    .ParamType(REQUIRED)
+    .DataType({DT_FLOAT16, DT_BF16})
+    .Format({FORMAT_ND});
+Input("rowIdx")
+    .ParamType(REQUIRED)
+    .DataType({DT_INT32})
+    .Format({FORMAT_ND});
+Input("expertIdx")
+    .ParamType(REQUIRED)
+    .DataType({DT_INT32})
+    .Format({FORMAT_ND});
+
+// 输出定义
+Output("expandedXOut")
+    .DataType({DT_FLOAT16, DT_BF16})
+    .Format({FORMAT_ND});
+Output("expandedRowIdx")
+    .DataType({DT_INT32})
+    .Format({FORMAT_ND});
+Output("expandedExpertIdx")
+    .DataType({DT_INT32})
+    .Format({FORMAT_ND});
+
+// 属性定义
+Attr("activeNum").AttrType(OPTIONAL).Int({0}); // 激活的专家数量
+```
+
 ### Agent 要点
 
 - 为新算子时：
@@ -103,45 +220,190 @@ description: Guides the agent to develop AscendC transformer GMM-style custom op
 
 ## 步骤三：在 op_kernel 中实现 AscendC kernel
 
-参考 `grouped_matmul_finalize_routing.h`，典型特征：
+### 通用特征
 
-- 使用 `namespace GroupedMatmulFinalizeRouting`
-- 引入：
+- 使用与算子同名的命名空间（如 `namespace FFN`, `namespace GroupedMatmul`, `namespace MoeInitRouting`）
+- 引入必要头文件：
   - `kernel_operator.h`
-  - `lib/matmul_intf.h`
-  - 自己的工具头文件（如 `grouped_matmul_finalize_routing_utils.h`）
+  - `lib/matmul_intf.h`（矩阵乘相关算子）
+  - 自己的工具头文件（如 `ffn_utils.h`, `grouped_matmul_utils.h`）
 - 定义类型别名：
   - `using aT = MatmulType<...>;`
   - `using bT = MatmulType<...>;`
   - `using BiasT = ...;`
   - `using cT = ...;`
   - `using MT = matmul::MatmulImpl<aT, bT, cT, BiasT, CFG_MDL>;`
-- 使用模板参数控制不同场景：
-  - 例如 `Param` 结构体模板携带：
-    - 是否 `combine`
-    - `ROW_INDEX_DTYPE`
-    - `TILING_TYPE`
-    - `SCALE_TYPE`
-    - 是否有 `groupListType` / `sharedInputIsNone` / `transpose` 等
+- 使用模板参数控制不同场景（数据类型、量化模式、激活函数等）
+
+### 算子特定实现
+
+#### FFN 算子实现
+
+FFN 算子实现 Feed Forward Network 计算，包含两个线性变换和激活函数：
+
+```cpp
+namespace FFN {
+
+// 定义激活类型枚举
+enum ActiveType {
+    ACTIVE_GELU = 0,
+    ACTIVE_RELU = 1,
+    ACTIVE_FASTGELU = 2,
+    ACTIVE_SILU = 3,
+    ACTIVE_SIGMOID = 4,
+    ACTIVE_TANH = 5
+};
+
+// 定义参数结构体
+template <typename T, ActiveType ACTIVE, bool WITH_BIAS>
+struct Param {
+    using InputType = T;
+    using OutputType = T;
+    static constexpr ActiveType kActive = ACTIVE;
+    static constexpr bool kWithBias = WITH_BIAS;
+};
+
+// 主计算类
+template <class P> class FfnCompute {
+public:
+    using InputType = typename P::InputType;
+    using OutputType = typename P::OutputType;
+
+    // 初始化函数
+    void Init(const InitParams &initParams, const FFNTiling *tiling) {
+        // 初始化全局张量、UB buffer、队列等
+    }
+
+    // 处理函数
+    void Process() {
+        // 第一个线性变换：x * weight1 + bias1
+        // 应用激活函数
+        // 第二个线性变换：(x * weight1 + bias1) * weight2 + bias2
+        // 写回结果
+    }
+
+private:
+    // 实现激活函数
+    void ApplyActivation(InputType *src, OutputType *dst, uint32_t size) {
+        switch (P::kActive) {
+            case ACTIVE_GELU:
+                // 实现 GELU 激活
+                break;
+            case ACTIVE_FASTGELU:
+                // 实现 FASTGELU 激活
+                break;
+            // 其他激活函数实现
+        }
+    }
+};
+
+} // namespace FFN
+```
+
+#### GMM 算子实现
+
+GMM 算子实现分组矩阵乘法：
+
+```cpp
+namespace GroupedMatmul {
+
+// 定义参数结构体
+template <typename T, typename WeightT, typename BiasT, typename OutputT>
+struct Param {
+    using InputType = T;
+    using WeightType = WeightT;
+    using BiasType = BiasT;
+    using OutputType = OutputT;
+};
+
+// 主计算类
+template <class P> class GroupedMatmulCompute {
+public:
+    using InputType = typename P::InputType;
+    using WeightType = typename P::WeightType;
+    using BiasType = typename P::BiasType;
+    using OutputType = typename P::OutputType;
+
+    // 初始化函数
+    void Init(const InitParams &initParams, const GroupedMatmulTiling *tiling) {
+        // 初始化全局张量、分组信息、UB buffer、队列等
+    }
+
+    // 处理函数
+    void Process() {
+        // 循环处理每个分组
+        for (uint32_t groupIdx = 0; groupIdx < tiling_->groupNum; ++groupIdx) {
+            // 计算当前分组的矩阵乘
+            ComputeGroup(groupIdx);
+        }
+    }
+
+private:
+    // 分组计算函数
+    void ComputeGroup(uint32_t groupIdx) {
+        // 设置当前分组的输入、权重、输出偏移
+        // 执行矩阵乘法
+        // 添加偏置（如果有）
+        // 写回当前分组结果
+    }
+};
+
+} // namespace GroupedMatmul
+```
+
+#### MoE 算子实现
+
+MoE 算子实现 Mixture-of-Experts 路由逻辑：
+
+```cpp
+namespace MoeInitRouting {
+
+// 定义参数结构体
+template <typename T, typename IndexT>
+struct Param {
+    using InputType = T;
+    using IndexType = IndexT;
+};
+
+// 主计算类
+template <class P> class MoeInitRoutingCompute {
+public:
+    using InputType = typename P::InputType;
+    using IndexType = typename P::IndexType;
+
+    // 初始化函数
+    void Init(const InitParams &initParams, const MoeInitRoutingTiling *tiling) {
+        // 初始化全局张量、UB buffer、队列等
+    }
+
+    // 处理函数
+    void Process() {
+        // 处理路由逻辑
+        // 根据 rowIdx 和 expertIdx 扩展输入 x
+        // 生成扩展后的 rowIdx 和 expertIdx
+        // 写回结果
+    }
+
+private:
+    // 扩展输入张量
+    void ExpandInput(const InputType *x, IndexType *rowIdx, IndexType *expertIdx,
+                    InputType *expandedX, IndexType *expandedRowIdx, IndexType *expandedExpertIdx) {
+        // 实现扩展逻辑
+    }
+};
+
+} // namespace MoeInitRouting
+```
 
 ### 典型结构（参考即可，勿死记）
 
 - 工具函数：
   - 如 `DataCopyPad2D`，有 GM↔UB 两个重载，带 `DataCopy2DDimParams`
 - 主要类：
-  - `template <class P> class QuantGroupMatmul`
-    - `Init(...)`：根据 `initParams` 和 `tiling` 设置：
-      - 多个 `GlobalTensor<...>`：
-        - 输入、权重、bias、workspace、scale、per-token scale、group list、logits、residual、token ranks、输出等
-      - 读取 `tiling` 中控制 flag（如 `deterministicFlag`, `hasPertokenScale`, `hasBias`）
-      - 初始化队列和 UB buffer（`InitUbBuffer`）
-    - `Process()`：整体执行流程，包含：
-      - AIV / AIC 的分工、`PreProcess`（初始化输出、shared input 处理）
-      - 循环 group、按 tiling 分块，依次：
-        - `MMCompute(...)`：设置 matmul 形状、GM offset、workspace offset，调用 `mm.Iterate()` 做矩阵乘
-        - `VectorSync(...)` + `FRDeterministic(...)`：处理 deterministic 模式
-        - `VectorCompute(...)`：处理反量化、per-token scale、bias、atomic 写回
-    - 若新算子逻辑相近，**尽量复用这一整套结构，只做必要变更**
+  - 包含 `Init(...)` 方法：初始化全局张量、UB buffer、队列等
+  - 包含 `Process()` 方法：整体执行流程，包含计算逻辑和结果写回
+  - 包含私有辅助方法：实现具体计算逻辑（如激活函数、分组处理等）
+  - 若新算子逻辑相近，**尽量复用这一整套结构，只做必要变更**
 
 ### Agent 要点
 
