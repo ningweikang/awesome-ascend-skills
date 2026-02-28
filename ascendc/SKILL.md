@@ -81,6 +81,17 @@ Subsequent sections will detail what to do in each step and which details to pay
     `/usr/local/Ascend/cann-8.5.0-beta.1/aarch64-linux/include/graph/types.h`
   - Tensor formats: `enum Format` in the same `graph/types.h` (e.g. lines 189–247)
   - **op_host 定义约定**：每个输入/输出的 `.DataType({...})`、`.Format({...})`、`.UnknownShapeFormat({...})` 三个列表的**元素个数必须相同**（见 references/type_format_reference.md）。
+- **Kernel 开发参考**:
+  - 详见本 skill 下的 **references/ascendc_kernel_implement.md**。
+  - 提示 CopyIn, Compute, CopyOut 三个阶段的正确写法。以及 TQue, TQue, GlobalTensor 等内存搬运相关类的正确用法。
+
+### References 索引
+
+| 文档 | 说明 |
+|------|------|
+| references/type_format_reference.md | op_host 类型/格式枚举与定义约定 |
+| **references/ascendc_kernel_implement.md** | **Kernel 开发：CopyIn, Compute, CopyOut 等编写引导** |
+| references/genop_functionality_index.md | genop 功能索引（如有） |
 
 ### Behavioral Guidelines
 
