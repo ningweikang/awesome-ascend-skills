@@ -26,8 +26,8 @@ def check_cann_installation():
                     version_line = f.readline().strip()
                     version_parts = version_line.split()
                     if len(version_parts) > 2:
-                        return version_parts[2], "CANN 8.5+ detected"
-            return "8.5+", "CANN 8.5+ detected"
+                        return True, f"CANN {version_parts[2]} (8.5+)"
+            return True, "CANN 8.5+"
 
         # Check for older path: /usr/local/Ascend/ascend-toolkit
         elif os.path.exists("/usr/local/Ascend/ascend-toolkit"):
@@ -38,12 +38,12 @@ def check_cann_installation():
                     version_line = f.readline().strip()
                     version_parts = version_line.split()
                     if len(version_parts) > 2:
-                        return version_parts[2], "CANN before 8.5 detected"
-            return "unknown", "CANN before 8.5 detected"
+                        return True, f"CANN {version_parts[2]} (before 8.5)"
+            return True, "CANN (before 8.5)"
 
-        return None, "CANN not found"
+        return False, "CANN not found"
     except Exception as e:
-        return None, f"Error checking CANN: {str(e)}"
+        return False, f"Error checking CANN: {str(e)}"
 
 
 def check_cann_env_vars():
