@@ -85,20 +85,20 @@ def analyze_performance(input_folder):
 
     # ==================== 瓶颈判定 ====================
     conclusion = ""
-    guide_file = ""
+    sub_skill = ""
 
     if avg_free > 20:
         conclusion = "空闲占比超过20% → 判定为【下发问题】"
-        guide_file = "Hostbound_skill.md"
+        sub_skill = "/profiling-hostbound-skill"
     elif avg_compute > 85:
         conclusion = "计算占比超过85% → 判定为【计算问题】"
-        guide_file = "Computing_skill.md"
+        sub_skill = "/profiling-computing-skill"
     elif avg_comm > 10:
         conclusion = "通信占比超过10% → 判定为【通信问题】"
-        guide_file = "Communication_skill.md"
+        sub_skill = "/profiling-communication-skill"
     else:
         conclusion = "无明显性能瓶颈，系统运行正常"
-        guide_file = "无"
+        sub_skill = "无"
 
     # ==================== 最终打屏展示 ====================
     print("\n" + "=" * 100)
@@ -115,7 +115,7 @@ def analyze_performance(input_folder):
     print(f"【通信 Communication 最高】{max_comm['communication']}% → {max_comm['path']}")
 
     print(f"\n结论：{conclusion}")
-    print(f"请参考优化文档：{guide_file}")
+    print(f"请调用子Skill进行深入分析：{sub_skill}")
     print("=" * 100)
 
 # ==================== 运行入口 ====================
