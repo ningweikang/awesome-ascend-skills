@@ -574,8 +574,10 @@ def update_readme(
         # Format skill link
         skill_link = f"[{skill.name}](external/{source_name}/{skill.name}/SKILL.md)"
 
-        # Clean description for markdown table
-        clean_description = description.replace("\n", " ").strip()
+        # Clean description for markdown table (escape pipe, remove newlines, truncate)
+        clean_description = description.replace("|", "\\|").replace("\n", " ").strip()
+        if len(clean_description) > 100:
+            clean_description = clean_description[:97] + "..."
 
         # Add row to table
         table_lines.append(f"| {skill_link} | {source_link} | {clean_description} |")
@@ -583,37 +585,27 @@ def update_readme(
     table_lines.append("")
     table_lines.append("---")
 
-    # Find insertion point - after "## Skill 列表"
-    skill_list_match = re.search(r"## Skill 列表\n\n", content)
-    if not skill_list_match:
-        # If "## Skill 列表" not found, add at end before "## Skill 工作原理"
-        work_principles_match = re.search(r"## Skill 工作原理", content)
-        if work_principles_match:
-            insertion_point = work_principles_match.start()
-        else:
-            insertion_point = len(content)
-    else:
-        # Skip the "---" separator after "## Skill 列表"
-        next_dash = content.find("---", skill_list_match.end())
-        if next_dash != -1:
-            insertion_point = next_dash + 3
-        else:
-            insertion_point = content.find("## Skill 工作原理", skill_list_match.end())
-            if insertion_point == -1:
-                insertion_point = len(content)
+    # Check if section already exists
+    section_start = content.find("## 外部 Skills (External Skills)")
+    section_end = content.find("\n---", section_start) if section_start != -1 else -1
 
-    # Replace or insert section
-    if "## 外部 Skills (External Skills)" in content:
-        pattern = r"## 外部 Skills \(External Skills\)(.*?)\n---"
-        replacement = "\n".join(table_lines)
-        content = re.sub(pattern, replacement, content, flags=re.DOTALL)
-    else:
+    if section_start != -1 and section_end != -1:
+        # Replace existing section
         content = (
-            content[:insertion_point]
+            content[:section_start]
             + "\n".join(table_lines)
-            + "\n"
-            + content[insertion_point:]
+            + content[section_end + 4 :]
         )
+    else:
+        # Insert after "## Skill 列表" section (before "## Skill 工作原理")
+        insert_marker = "\n---\n\n## Skill 工作原理"
+        if insert_marker in content:
+            content = content.replace(
+                insert_marker, "\n" + "\n".join(table_lines) + "\n\n## Skill 工作原理"
+            )
+        else:
+            # Fallback: append at end before last section
+            content = content.rstrip() + "\n\n" + "\n".join(table_lines) + "\n"
 
     # Write back to file
     readme_file.write_text(content, encoding="utf-8")
