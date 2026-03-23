@@ -8,42 +8,17 @@
 
 ## Validation Scope
 
-本地验证外部 skills 同步脚本的完整功能：
+本地验证外部 skills 同步脚本的完整功能，包括两个外部源：
 
-1. 从配置的外部仓库克隆 skills
-2. 复制 skills 到 `external/{source}/{skill}/` 目录
-3. 注入来源标记并重命名 skill（遵循命名规范）
-4. 验证 skills 通过 `validate_skills.py`
-5. 更新 `marketplace.json`
-6. 更新 `README.md` 外部 skills 表格
+**Sources Tested**:
+1. `mindstudio-skills` - GitHub (root level skills)
+2. `agent-skills` - GitCode (skills in subdirectory)
 
 ---
 
-## Test Environment
+## Test Results
 
-- **Working Directory**: `.worktrees/sync-external`
-- **External Source**: `https://github.com/kali20gakki/mindstudio-skills`
-- **Branch**: `main`
-- **Commit SHA**: `59b9bac`
-
----
-
-## Validation Steps
-
-### Step 1: Pre-validation Backup
-```bash
-cp README.md .sisyphus/validation/README.md.backup
-cp .claude-plugin/marketplace.json .sisyphus/validation/marketplace.json.backup
-```
-
-### Step 2: Run Sync Script
-```bash
-python3 scripts/sync_external_skills.py
-```
-
-### Step 3: Verify Results
-
-#### 3.1 Skills Synced
+### Source 1: mindstudio-skills (GitHub)
 | Skill | Status |
 |-------|--------|
 | op-mfu-calculator | ✅ Synced |
@@ -52,82 +27,68 @@ python3 scripts/sync_external_skills.py
 | ascend-profiler-db-explorer | ✅ Synced |
 | mindstudio_profiler_data_check | ✅ Synced |
 
-#### 3.2 Validation Output
+### Source 2: agent-skills (GitCode)
+| Skill | Status |
+|-------|--------|
+| vLLM-ascend_FAQ_Generator | ✅ Synced |
+| npu-smi | ⏭️ Skipped (conflict with local) |
+| hccl-test | ⏭️ Skipped (conflict with local) |
+| skill-auditor | ✅ Synced |
+| ascend-docker | ⏭️ Skipped (conflict with local) |
+| npu-adapter-reviewer | ✅ Synced |
+| vector-triton-ascend-ops-optimizer | ✅ Synced |
+| ascend-inference-repos-copilot | ✅ Synced |
+| ascend-profiling-anomaly | ✅ Synced |
+| simple-vector-triton-gpu-to-npu | ✅ Synced |
+| atc-model-converter | ⏭️ Skipped (conflict with local) |
+
+### Summary
+- **Synced**: 12 skills
+- **Skipped**: 4 skills (conflicts with local)
+- **Errors**: 0
+
+---
+
+## Validation Output
 ```
-Summary: 32 files checked
+Summary: 39 files checked
   Errors: 0
   Warnings: 1
 
 ✅ Validation PASSED!
 ```
 
-#### 3.3 Marketplace Updated
-- 5 external skills added to marketplace.json
-- Each skill marked with `external: true`
+---
 
-#### 3.4 README Updated
-- External skills table added with 5 entries
-- Contains links to skill files and source repositories
+## New Feature: skills_path
 
-### Step 4: Post-validation Cleanup
-```bash
-# Revert to backup state
-cp .sisyphus/validation/README.md.backup README.md
-cp .sisyphus/validation/marketplace.json.backup .claude-plugin/marketplace.json
-rm -rf external/mindstudio
+支持 skills 在子目录的仓库，通过 `skills_path` 配置：
+
+```yaml
+sources:
+  - name: gitcode-ascend
+    url: https://gitcode.com/Ascend/agent-skills
+    branch: master
+    skills_path: skills  # 在 skills/ 子目录查找
 ```
 
 ---
 
-## Issues Fixed During Validation
+## Issues Fixed During Development
 
-### Issue 1: main() Not Calling sync_all_sources()
-- **Problem**: `main()` only loaded config, didn't execute sync
-- **Fix**: Updated `main()` to call `sync_all_sources()` and print results
-
-### Issue 2: Skill Naming Convention
-- **Problem**: External skills failed validation with "Nested skill name should start with 'external-'"
-- **Fix**: Updated `inject_attribution()` to rename skills to `external-{source}-{name}` format
-
-### Issue 3: update_readme/update_marketplace Path Issue
-- **Problem**: `skill.path` pointed to temp directory that was cleaned up before calling update functions
-- **Fix**: Create new Skill object with correct path pointing to `external/{source}/{name}`
-
----
-
-## Final Sync Output
-
-```
-============================================================
-SYNC SUMMARY
-============================================================
-  Synced: 5
-  Skipped: 0
-  Errors: 0
-  Total: 5
-============================================================
-
-============================================================
-SYNC COMPLETE
-============================================================
-  Synced: 5
-  Skipped: 0
-  Errors: 0
-```
+1. **main() execution**: `main()` now calls `sync_all_sources()`
+2. **Naming convention**: Skills renamed to `external-{source}-{name}` format
+3. **Path fix**: Skill objects use correct path after cleanup
+4. **skills_path support**: Added subdirectory search capability
 
 ---
 
 ## Conclusion
 
-外部 skills 同步功能验证通过。脚本能够：
+外部 skills 同步功能验证通过，支持：
+- ✅ GitHub 和 GitCode 仓库
+- ✅ 根目录和子目录 skills
+- ✅ 冲突检测和跳过
+- ✅ marketplace.json 和 README.md 自动更新
 
-1. ✅ 从配置的外部仓库克隆并发现 skills
-2. ✅ 正确处理命名规范（`external-{source}-{name}`）
-3. ✅ 注入来源标记（synced-from, synced-date, synced-commit, license）
-4. ✅ 通过 validate_skills.py 验证
-5. ✅ 更新 marketplace.json
-6. ✅ 更新 README.md 外部 skills 表格
-7. ✅ 处理冲突检测和跳过逻辑
-8. ✅ 清理临时克隆目录
-
-**Recommendation**: PR 可以合并，同步功能已就绪。
+**Recommendation**: PR 可以合并
