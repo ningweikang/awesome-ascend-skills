@@ -46,9 +46,12 @@
     },
     {
       "name": "msmodelslim",
-      "description": "Huawei Ascend NPU model compression tool for LLM, MoE, and multimodal models. Supports W4A8, W8A8, W8A8S, W8A16, W8A8C8 quantization and sparse quantization. Compatible with 20+ model families (Qwen, DeepSeek, LLaMA, GLM, Kimi, Baichuan, Yi, InternLM, Mistral, etc.). Includes precision auto-tuning, custom model integration guide, and vLLM-Ascend/MindIE deployment.",
-      "source": "./msmodelslim",
-      "category": "development"
+      "description": "Huawei Ascend NPU server model quantization tool skills, using msmodelslim for quantization compression, the tool is specifically designed for LLM quantization acceleration on Ascend NPU cards. It supports INT4/INT8/INT16 quantization and provides a complete quantization workflow, including environment checking, dynamic scheme query, container deployment, quantization execution, etc., and supports quantization tuning, adapter adaptation, etc. Interactive experience with controllable processes.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./msmodelslim/msmodelslim-quant"
+      ]
     },
     {
       "name": "ais-bench",

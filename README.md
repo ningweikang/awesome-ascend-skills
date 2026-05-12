@@ -84,7 +84,7 @@ cp -r awesome-ascend-skills/npu-smi your-project/.agents/skills/
 | [torch-npu-comm-test](torch-npu-comm-test/SKILL.md) | 测试 | 通过 torch.distributed 测试通信算子性能：支持任意 tensor shape、dtype，torchrun 启动，贴近真实训练场景 |
 | [atc-model-converter](atc-model-converter/SKILL.md) | 开发 | ATC 模型转换：ONNX 转 .om 格式、OM 推理、精度对比、YOLO 端到端部署 |
 | [ascend-docker](ascend-docker/SKILL.md) | 运维 | Docker 容器配置：NPU 设备映射、卷挂载、开发环境隔离 |
-| [msmodelslim](msmodelslim/SKILL.md) | 开发 | 模型压缩量化：W4A8/W8A8/W8A8S 量化、MoE/多模态模型支持、精度自动调优 |
+| [msmodelslim-quant](msmodelslim/msmodelslim-quant/SKILL.md) | 开发 | 模型压缩量化，更专精于已验证量化方案的量化流程化：量化方案从msmodelslim中动态分析获取，流程清晰简洁，可控。 |
 | [vllm-ascend](vllm-ascend/SKILL.md) | 开发 | vLLM 推理引擎：离线批推理、OpenAI 兼容 API、量化模型服务、分布式推理 |
 | [ais-bench](ais-bench/SKILL.md) | 测试 | AI 模型评估工具：精度评估（MMLU/GSM8K/MMMU 等 15+ 基准）、性能压测、Function Call |
 | [ascendc](ascendc/SKILL.md) | 开发 | AscendC 算子开发：FFN/GMM/MoE 等 Transformer 算子实现、CANN API 示例 |
