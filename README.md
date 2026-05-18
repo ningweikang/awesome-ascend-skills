@@ -2,7 +2,10 @@
 
 # Awesome Ascend Skills
 
-这是一个给华为昇腾 NPU 开发者使用的 skills 仓库。内容按 Skill 组织，可被 Claude Code、OpenCode、Cursor、Trae、Codex 等 AI 编程工具读取。
+这是一个给昇腾 NPU 开发者使用的 skills 仓库。内容按 Skill 组织，可被 Claude Code、OpenCode、Cursor、Trae、Codex 等 AI 编程工具读取。
+
+- GitHub Pages: https://ascend-ai-coding.github.io/awesome-ascend-skills/
+- skills.sh: https://skills.sh/ascend-ai-coding/awesome-ascend-skills
 
 ---
 
@@ -25,7 +28,7 @@
 
 ## 简介
 
-'*''*'Awesome Ascend Skills'*''*' 收集昇腾 NPU 开发中常用的排障、部署、迁移和分析经验。仓库里主要有四类内容：
+**Awesome Ascend Skills** 收集昇腾 NPU 开发中常用的排障、部署、迁移和分析经验。仓库里主要有四类内容：
 
 - 单个 skill：处理一个明确问题，比如 `npu-smi`、`hccl-test`
 - 领域技能包：把同一方向的多个子 skill 放在一起，比如 `mindspeed-llm-skills`
@@ -142,8 +145,8 @@ npx skills add https://github.com/ascend-ai-coding/awesome-ascend-skills -s '*'
 
 `ascend-profiling` 和 `ascend-ops` 的区别：
 
-- 选 `ascend-profiling`：你已经有模型/训练任务，重点是'*''*'采集 Profiling、定位性能瓶颈、分析 hostbound / computing / communication'*''*'。
-- 选 `ascend-ops`：你要做的是'*''*'算子开发、算子迁移、op-plugin 接入、Triton-Ascend 改写或算子级调优'*''*'。
+- 选 `ascend-profiling`：你已经有模型/训练任务，重点是**采集 Profiling、定位性能瓶颈、分析 hostbound / computing / communication**。
+- 选 `ascend-ops`：你要做的是**算子开发、算子迁移、op-plugin 接入、Triton-Ascend 改写或算子级调优**。
 
 ### 领域技能包
 
@@ -162,7 +165,7 @@ npx skills add https://github.com/ascend-ai-coding/awesome-ascend-skills -s '*'
 
 如果无法使用 `npx`，可以手动复制所需的 skill 目录。
 
-'*''*'方式一：项目级安装'*''*'（推荐）
+**方式一：项目级安装**（推荐）
 
 将所需 skill 复制到项目根目录的 `.agents/skills/` 下：
 
@@ -187,7 +190,7 @@ cp -r awesome-ascend-skills/skills/ops/triton-ascend-migration your-project/.age
 cp -r awesome-ascend-skills/skills/ops/npu-op-benchmark your-project/.agents/skills/
 ```
 
-'*''*'方式二：全局安装'*''*'
+**方式二：全局安装**
 
 将 Skill 复制到对应 AI 编程工具的全局 Skills 目录。各平台安装位置请参考官方文档：
 
@@ -293,7 +296,7 @@ cp -r awesome-ascend-skills/skills/ops/npu-op-benchmark your-project/.agents/ski
 | [arxiv-recommendation-npu](external/gitcode-ascend/arxiv-recommendation-npu/SKILL.md) | [gitcode-ascend](https://gitcode.com/Ascend/agent-skills) | 自动化推荐系统论文发现流水线。抓取 arxiv 推荐论文，检测源码，生成待迁移任务清单，由 npu-model-migration skill 完成 NPU 适配。 |
 | [ascend-inference-repos-copilot](external/gitcode-ascend/ascend-inference-repos-copilot/SKILL.md) | [gitcode-ascend](https://gitcode.com/Ascend/agent-skills) | 查询 Ascend 推理相关开源仓，包括 vLLM、vLLM-Ascend、MindIE-LLM、MindIE-SD、MindIE-Motor、MindIE-Turbo 等。 |
 | [ascend-npu-driver-install](external/gitcode-ascend/ascend-npu-driver-install/SKILL.md) | [gitcode-ascend](https://gitcode.com/Ascend/agent-skills) | 安装昇腾 NPU 驱动和固件，处理安装包识别、权限、包校验、系统依赖和常见 Linux 发行版差异。 |
-| [ascend-profiling-anomaly](external/gitcode-ascend/ascend-profiling-anomaly/SKILL.md) | [gitcode-ascend](https://gitcode.com/Ascend/agent-skills) | Analyze Huawei Ascend NPU profiling data, find performance anomalies, and write a compact report. |
+| [ascend-profiling-anomaly](external/gitcode-ascend/ascend-profiling-anomaly/SKILL.md) | [gitcode-ascend](https://gitcode.com/Ascend/agent-skills) | Analyze Ascend NPU profiling data, find performance anomalies, and write a compact report. |
 | [ascendc-operator-code-gen](external/gitcode-ascend/ascendc-operator-code-gen/SKILL.md) | [gitcode-ascend](https://gitcode.com/Ascend/agent-skills) | 根据设计文档生成 AscendC 算子的 op_host、op_kernel 代码，并接入 PyTorch 侧注册。 |
 | [ascendc-operator-code-review](external/gitcode-ascend/ascendc-operator-code-review/SKILL.md) | [gitcode-ascend](https://gitcode.com/Ascend/agent-skills) | 检查 Ascend C 代码的安全、规范和接口问题。调用时需要给出代码片段和检视规则。 |
 | [ascendc-operator-compile-debug](external/gitcode-ascend/ascendc-operator-compile-debug/SKILL.md) | [gitcode-ascend](https://gitcode.com/Ascend/agent-skills) | 编译安装 AscendC 算子，运行精度测试，并排查编译或测试失败。 |
@@ -326,7 +329,7 @@ cp -r awesome-ascend-skills/skills/ops/npu-op-benchmark your-project/.agents/ski
 | [modelscope-cli](external/gitcode-ascend/modelscope-cli/SKILL.md) | [gitcode-ascend](https://gitcode.com/Ascend/agent-skills) | 使用 ModelScope CLI 下载模型或数据集，校验文件，统计参数量，并做网络诊断。 |
 | [msverl-daily-regression-triage](external/gitcode-ascend/msverl-daily-regression-triage/SKILL.md) | [gitcode-ascend](https://gitcode.com/Ascend/agent-skills) | Triage a daily msverl regression run by reading the baseline comparison log, stopping on succ... |
 | [npu-adapter-reviewer](external/gitcode-ascend/npu-adapter-reviewer/SKILL.md) | [gitcode-ascend](https://gitcode.com/Ascend/agent-skills) | 审查 GPU 代码迁移到昇腾 NPU 的风险，重点看深度学习和模型推理代码。 |
-| [npu-model-migration](external/gitcode-ascend/npu-model-migration/SKILL.md) | [gitcode-ascend](https://gitcode.com/Ascend/agent-skills) | 自动化将 PyTorch 模型迁移到华为昇腾 NPU。Use when: 用户请求将模型迁移到 NPU、适配 NPU、在 NPU 上跑通模型、迁移到昇腾。 |
+| [npu-model-migration](external/gitcode-ascend/npu-model-migration/SKILL.md) | [gitcode-ascend](https://gitcode.com/Ascend/agent-skills) | 自动化将 PyTorch 模型迁移到昇腾 NPU。Use when: 用户请求将模型迁移到 NPU、适配 NPU、在 NPU 上跑通模型、迁移到昇腾。 |
 | [python-refactoring](external/gitcode-ascend/python-refactoring/SKILL.md) | [gitcode-ascend](https://gitcode.com/Ascend/agent-skills) | Python 代码重构技能，覆盖代码坏味道识别、设计模式应用、可读性改进和实战经验。当用户要求"重构代码"、"refactor"、"代码优化"、"改善代码质量"、"code smell ... |
 | [security-code-review](external/gitcode-ascend/security-code-review/SKILL.md) | [gitcode-ascend](https://gitcode.com/Ascend/agent-skills) | 多语言安全代码审查 (Security Code Review)。对 Python、C++、Shell、Markdown 文件进行系统性安全漏洞检测与修复指导。覆盖 OWASP Top ... |
 | [simple-vector-triton-gpu-to-npu](external/gitcode-ascend/simple-vector-triton-gpu-to-npu/SKILL.md) | [gitcode-ascend](https://gitcode.com/Ascend/agent-skills) | 将简单Vector类型Triton算子从GPU迁移到昇腾NPU。当用户需要迁移Triton代码到NPU、提到GPU到NPU迁移、Triton迁移、昇腾适配时使用。注意：无法自动迁移存在编... |
@@ -343,11 +346,11 @@ cp -r awesome-ascend-skills/skills/ops/npu-op-benchmark your-project/.agents/ski
 | [triton-operator-precision-eval](external/gitcode-ascend/triton-operator-precision-eval/SKILL.md) | [gitcode-ascend](https://gitcode.com/Ascend/agent-skills) | Triton 算子精度评估。与 PyTorch 参考实现对比，自动计算误差指标，生成标准化精度报告。关键词：精度测试、precision evaluation、精度报告、accuracy... |
 | [vLLM-ascend_FAQ_Generator](external/gitcode-ascend/vLLM-ascend_FAQ_Generator/SKILL.md) | [gitcode-ascend](https://gitcode.com/Ascend/agent-skills) | 为 vLLM-ascend 项目构建自动化工作流，处理已关闭的Issue并生成Debug FAQ。Use when users want to process closed issues... |
 | [vector-triton-ascend-ops-optimizer](external/gitcode-ascend/vector-triton-ascend-ops-optimizer/SKILL.md) | [gitcode-ascend](https://gitcode.com/Ascend/agent-skills) | 昇腾（Ascend） NPU 上 Triton 算子深度性能优化技能（Skill），致力于实现用户要求的 Triton 算子性能提升。核心技术包括但不限于 Unified Buffer ... |
-| [verl-async-dapo](external/gitcode-ascend/verl-async-dapo/SKILL.md) | [gitcode-ascend](https://gitcode.com/Ascend/agent-skills) | Verl 单异步 DAPO 训练配置生成器。触发场景：(1) 启动单异步 DAPO 训练 (2) 生成训练脚本 (3) 配置特性参数 (4) 训练前检查。'*''*'特性策略'*''*'：用户未指定时默... |
+| [verl-async-dapo](external/gitcode-ascend/verl-async-dapo/SKILL.md) | [gitcode-ascend](https://gitcode.com/Ascend/agent-skills) | Verl 单异步 DAPO 训练配置生成器。触发场景：(1) 启动单异步 DAPO 训练 (2) 生成训练脚本 (3) 配置特性参数 (4) 训练前检查。**特性策略**：用户未指定时默... |
 | [verl-deploy](external/gitcode-ascend/verl-feature-deploy/SKILL.md) | [gitcode-ascend](https://gitcode.com/Ascend/agent-skills) | Verl 分布式训练服务一键拉起与配置。触发场景：(1) 用户要启动 Verl 训练任务或部署 RLHF/DAPO 训练环境 (2) 在 NPU 集群上拉起 Verl 训练容器 (3) ... |
 | [vllm-ascend-deploy](external/gitcode-ascend/vllm-ascend-deploy/SKILL.md) | [gitcode-ascend](https://gitcode.com/Ascend/agent-skills) | 昇腾 NPU 平台 vLLM 大模型推理服务一键部署。触发：用户说'部署 模型名'、'NPU 部署模型'、'vllm serve'。流程：SSH检查 → NPU检查 → 配置发现(必须验... |
 | [vllm-tests-failure-analysis](external/gitcode-ascend/vllm-tests-failure-analysis/SKILL.md) | [gitcode-ascend](https://gitcode.com/Ascend/agent-skills) | Analyze and debug upstream vLLM test failures on Ascend NPUs. Adapt test cases from `vllm/tes... |
-| [ascend_pytorch_profiler_db_explorer](external/mindstudio/ascend-profiler-db-explorer/SKILL.md) | [mindstudio](https://github.com/kali20gakki/mindstudio-skills) | 面向 Ascend PyTorch Profiler / msprof DB（如 ascend_pytorch_profiler'*'.db、msprof_'*'.db）的 SQL 分析技能。将... |
+| [ascend_pytorch_profiler_db_explorer](external/mindstudio/ascend-profiler-db-explorer/SKILL.md) | [mindstudio](https://github.com/kali20gakki/mindstudio-skills) | 面向 Ascend PyTorch Profiler / msprof DB（如 ascend_pytorch_profiler*.db、msprof_*.db）的 SQL 分析技能。将... |
 | [cluster-fast-slow-rank-detector](external/mindstudio/cluster-fast-slow-rank-detector/SKILL.md) | [mindstudio](https://github.com/kali20gakki/mindstudio-skills) | 专门用于 Ascend 集群 Profiling 性能数据的“快慢卡”诊断专家技能。当用户提供【集群性能数据目录/路径】并要求分析【快慢卡】、【慢节点】、【负载不均衡】或【集群瓶颈】时，... |
 | [document-ux-review](external/mindstudio/document-ux-review/SKILL.md) | [mindstudio](https://github.com/kali20gakki/mindstudio-skills) | 当用户希望你像第一次接触项目的人一样，真实按仓库的 README、安装文档或 quick start 跑一遍，并判断“新人能不能走通”“文档是否可用”“哪里会卡住”“安装/启动说明是否对... |
 | [gitcode-code-reviewer](external/mindstudio/gitcode-code-reviewer/SKILL.md) | [mindstudio](https://github.com/kali20gakki/mindstudio-skills) | 用于审查 GitCode PR，并结合 PR metadata、diff 与整个代码仓上下文生成深度审查结论或发布逐行评论。当用户希望 review GitCode PR、检查某个 Gi... |
@@ -363,9 +366,9 @@ cp -r awesome-ascend-skills/skills/ops/npu-op-benchmark your-project/.agents/ski
 
 Skills 用渐进式加载来控制上下文占用：
 
-1. '*''*'发现阶段'*''*'：仅加载 `name` + `description`（约 100 tokens）
-2. '*''*'激活阶段'*''*'：触发时加载完整 `SKILL.md` 内容
-3. '*''*'按需加载'*''*'：需要时再读取 `references/` 和 `scripts/` 中的详细资料
+1. **发现阶段**：仅加载 `name` + `description`（约 100 tokens）
+2. **激活阶段**：触发时加载完整 `SKILL.md` 内容
+3. **按需加载**：需要时再读取 `references/` 和 `scripts/` 中的详细资料
 
 这样做的目的很简单：平时少占上下文，真正触发某个 skill 时再加载细节。
 
@@ -380,11 +383,11 @@ Skills 用渐进式加载来控制上下文占用：
 这份规范主要约束这些事：
 
 - taxonomy：skill 属于哪个功能域、扮演什么角色
-- naming：何时使用 `ascend-'*'`、`'*'-skills`、嵌套 skill 前缀等命名方式
+- naming：何时使用 `ascend-*`、`*-skills`、嵌套 skill 前缀等命名方式
 - quality bar：官方 bundle、leaf、router、external 各自的最小质量要求
 - analytics / feedback：如何发现 bundle 边界不清、skill 重复和 README 导航问题
 
-如果你在使用时遇到“'*''*'不知道装哪个'*''*'”“'*''*'两个 skills 看起来重复'*''*'”“'*''*'README 导航仍然不清楚'*''*'”这类问题，可以用 [`skill feedback` issue 模板](.github/ISSUE_TEMPLATE/skill-feedback.yml) 反馈。
+如果你在使用时遇到“**不知道装哪个**”“**两个 skills 看起来重复**”“**README 导航仍然不清楚**”这类问题，可以用 [`skill feedback` issue 模板](.github/ISSUE_TEMPLATE/skill-feedback.yml) 反馈。
 
 ---
 
@@ -437,16 +440,16 @@ keywords:                            # 可选，推荐用于中文/双语 Skill
 
 | 字段 | 必填 | 说明 |
 |------|------|------|
-| `name` | 是 | `skills/<domain>/<leaf>/` 下的 leaf skill 与叶子目录名一致；`skills/<domain>/<group>/...` 下的 nested skill 按领域子目录前缀命名；`skills/ai-for-science/` 保持 `ai-for-science-'*'` 前缀 |
+| `name` | 是 | `skills/<domain>/<leaf>/` 下的 leaf skill 与叶子目录名一致；`skills/<domain>/<group>/...` 下的 nested skill 按领域子目录前缀命名；`skills/ai-for-science/` 保持 `ai-for-science-*` 前缀 |
 | `description` | 是 | 至少 20 个字符，包含使用场景和关键词 |
 | `keywords` | 否 | 推荐添加，用于中文关键词匹配 |
 
 #### 内容规范
 
-- '*''*'渐进式披露'*''*'：核心内容放在 SKILL.md（不超过 500 行），细节放在 `references/`
-- '*''*'代码块'*''*'：始终指定语言（```bash、python、yaml```）
-- '*''*'表格'*''*'：用于结构化参考数据（参数、命令对照）
-- '*''*'链接'*''*'：内部链接使用相对路径，并确认能打开
+- **渐进式披露**：核心内容放在 SKILL.md（不超过 500 行），细节放在 `references/`
+- **代码块**：始终指定语言（```bash、python、yaml```）
+- **表格**：用于结构化参考数据（参数、命令对照）
+- **链接**：内部链接使用相对路径，并确认能打开
 
 ### Marketplace 分类规范
 
@@ -532,9 +535,9 @@ skill-name/                          # 具体 skill 目录
 
 同步由 GitHub Actions 执行，有三种触发方式：
 
-1. '*''*'定时同步'*''*'：每天 UTC 00:00 自动执行
-2. '*''*'手动触发'*''*'：通过 GitHub Actions 页面手动运行
-3. '*''*'PR 触发'*''*'：修改 `.github/external-sources.yml` 配置文件时自动触发
+1. **定时同步**：每天 UTC 00:00 自动执行
+2. **手动触发**：通过 GitHub Actions 页面手动运行
+3. **PR 触发**：修改 `.github/external-sources.yml` 配置文件时自动触发
 
 ### 添加外部源
 
@@ -550,10 +553,10 @@ sources:
 
 ### 同步规则
 
-- '*''*'存储位置'*''*'：`external/{source-name}/{skill-name}/`
-- '*''*'冲突策略'*''*'：同名 skill 以本仓为准，外部 skill 被跳过
-- '*''*'来源标记'*''*'：同步的 skill 会自动添加 `synced-from`、`synced-date`、`synced-commit` 等属性
-- '*''*'PR 审核'*''*'：同步结果生成 PR，需人工审核后合并
+- **存储位置**：`external/{source-name}/{skill-name}/`
+- **冲突策略**：同名 skill 以本仓为准，外部 skill 被跳过
+- **来源标记**：同步的 skill 会自动添加 `synced-from`、`synced-date`、`synced-commit` 等属性
+- **PR 审核**：同步结果生成 PR，需人工审核后合并
 
 ### 查看外部 Skills
 
@@ -565,13 +568,13 @@ sources:
 
 ### 准备工作
 
-1. '*''*'Fork 仓库'*''*'：点击 GitHub 页面右上角的 Fork
-2. '*''*'克隆 Fork'*''*'：
+1. **Fork 仓库**：点击 GitHub 页面右上角的 Fork
+2. **克隆 Fork**：
    ```bash
    git clone https://github.com/YOUR_USERNAME/awesome-ascend-skills.git
    cd awesome-ascend-skills
    ```
-3. '*''*'创建分支'*''*'：
+3. **创建分支**：
    ```bash
    git checkout -b feat/your-skill-name
    # 或
@@ -580,25 +583,25 @@ sources:
 
 ### 开发流程
 
-1. '*''*'创建 Skill 目录'*''*'：
+1. **创建 Skill 目录**：
 ```bash
 mkdir -p skills/<domain>/your-skill-name
 ```
 
-2. '*''*'编写 SKILL.md'*''*'：按[贡献指南](#贡献指南)里的格式写
+2. **编写 SKILL.md**：按[贡献指南](#贡献指南)里的格式写
 
-3. '*''*'本地验证'*''*'：
+3. **本地验证**：
    ```bash
    python3 scripts/validate_skills.py
    ```
 
-4. '*''*'更新注册表'*''*'：在 `.claude-plugin/marketplace.json` 中添加新 Skill 条目，设置 `category` / `categories`
+4. **更新注册表**：在 `.claude-plugin/marketplace.json` 中添加新 Skill 条目，设置 `category` / `categories`
 
-5. '*''*'更新 README.md'*''*'：在 Skill 列表表格中添加新行
+5. **更新 README.md**：在 Skill 列表表格中添加新行
 
 ### 提交规范
 
-- '*''*'Commit 信息'*''*'：使用清晰的描述，例如：
+- **Commit 信息**：使用清晰的描述，例如：
   - `feat: add npu-smi skill`
   - `fix: update msmodelslim quantization params`
   - `docs: improve hccl-test examples`
@@ -617,7 +620,7 @@ mkdir -p skills/<domain>/your-skill-name
 
 ## 官方文档
 
-- [华为昇腾官方文档](https://www.hiascend.com/document)
+- [昇腾官方文档](https://www.hiascend.com/document)
 - [npu-smi 命令参考](https://www.hiascend.com/document/detail/zh/canncommercial/81RC1/envdeployment/instg/instg_0045.html)
 - [CANN 开发指南](https://www.hiascend.com/document/detail/zh/canncommercial/)
 
