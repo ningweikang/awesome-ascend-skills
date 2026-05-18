@@ -1,0 +1,86 @@
+name: Skill feedback
+description: Report onboarding confusion, bundle gaps, skill overlap, or navigation issues.
+title: "[skill-feedback] "
+labels:
+  - feedback
+  - skill-governance
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve Awesome Ascend Skills.
+
+        Use this template when:
+        - 你不知道该安装哪个 bundle / skill
+        - README 导航不清楚
+        - 发现两个 skills 职责重叠
+        - 觉得某个 bundle 过大、过小或边界不合理
+
+  - type: dropdown
+    id: feedback_type
+    attributes:
+      label: Feedback type
+      options:
+        - Bundle selection confusion
+        - README navigation issue
+        - Skill overlap / duplication
+        - Bundle boundary issue
+        - Missing recommended bundle
+        - Other governance feedback
+    validations:
+      required: true
+
+  - type: dropdown
+    id: affected_entry
+    attributes:
+      label: Affected bundle or skill
+      description: Select the closest entry point.
+      options:
+        - ascend-base
+        - ascend-inference
+        - ascend-training
+        - ascend-profiling
+        - ascend-ops
+        - ascend-ai-for-science
+        - mindspeed-llm-skills
+        - diffusers-ascend-skills
+        - profiling-analysis
+        - ai-for-science
+        - single leaf skill
+        - external skill
+        - README only
+        - other
+    validations:
+      required: true
+
+  - type: textarea
+    id: scenario
+    attributes:
+      label: What were you trying to do?
+      description: Describe the user task or scenario.
+      placeholder: |
+        例如：
+        - 我想在昇腾上做 vLLM 推理，但不知道应该装 ascend-inference 还是单独装 vllm-ascend
+        - 我在 README 中没看懂 profiling 和 ops 的区别
+    validations:
+      required: true
+
+  - type: textarea
+    id: pain_point
+    attributes:
+      label: What was confusing or missing?
+      placeholder: Tell us where the current repo structure, bundle design, or README failed you.
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested improvement
+      placeholder: |
+        例如：
+        - 给 ascend-ops 增加更明确的适用说明
+        - 在 README 快速开始里增加“算子开发”路径
+        - 合并两个重复的 skills
+    validations:
+      required: false

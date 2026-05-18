@@ -10,6 +10,8 @@ from scripts.sync_external_skills import (
     build_synced_skill_index,
     copy_skill,
     detect_conflicts,
+    find_skills,
+    get_local_skills,
     load_existing_external_skills,
     parse_skill_md,
     prune_removed_source_skills,
@@ -255,6 +257,61 @@ def test_parse_skill_md_does_not_salvage_unsupported_malformed_yaml(
     assert parsed == {}
 
 
+def test_get_local_skills_finds_nested_local_skills_and_skips_external(
+    tmp_path: Path,
+) -> None:
+    write_skill(
+        tmp_path / "skills" / "inference" / "atc-model-converter",
+        "atc-model-converter",
+    )
+    write_skill(
+        tmp_path / "skills" / "training" / "mindspeed-llm" / "mindspeed-llm-training",
+        "mindspeed-llm-training",
+    )
+    write_skill(
+        tmp_path / "skills" / "ai-for-science" / "models" / "ankh",
+        "ai-for-science-ankh-ascend-npu-skill",
+    )
+    write_skill(
+        tmp_path / "external" / "source-a" / "external-skill",
+        "external-source-a-external-skill",
+    )
+    write_skill(
+        tmp_path / ".agents" / "skills" / "local-agent-skill", "local-agent-skill"
+    )
+
+    original_cwd = Path.cwd()
+    try:
+        os.chdir(tmp_path)
+        local_skills = get_local_skills()
+    finally:
+        os.chdir(original_cwd)
+
+    assert "atc-model-converter" in local_skills
+    assert "mindspeed-llm-training" in local_skills
+    assert "ai-for-science-ankh-ascend-npu-skill" in local_skills
+    assert "external-skill" not in local_skills
+    assert "local-agent-skill" not in local_skills
+
+
+def test_find_skills_recurses_under_configured_skills_path(tmp_path: Path) -> None:
+    source = ExternalSource(
+        name="source-a",
+        url="https://example.com/a.git",
+        skills_path="skills",
+    )
+    repo = tmp_path / "repo"
+    write_skill(repo / "skills" / "base" / "npu-smi", "npu-smi")
+    write_skill(
+        repo / "skills" / "training" / "mindspeed-llm" / "mindspeed-llm-training",
+        "mindspeed-llm-training",
+    )
+
+    skills = find_skills(repo, source)
+
+    assert {skill.name for skill in skills} == {"npu-smi", "mindspeed-llm-training"}
+
+
 def test_copy_skill_rolls_back_failed_validation(tmp_path: Path, monkeypatch) -> None:
     source = ExternalSource(name="source-a", url="https://example.com/a.git")
     skill_dir = tmp_path / "repo" / "broken-skill"
@@ -450,3 +507,70 @@ def test_update_marketplace_preserves_non_external_plugin_order(tmp_path: Path) 
         "external-source-a-skills",
         "local-after",
     ]
+
+
+def test_update_marketplace_preserves_existing_external_categories(
+    tmp_path: Path,
+) -> None:
+    marketplace_path = tmp_path / "marketplace.json"
+    marketplace_path.write_text(
+        """{
+  "name": "test-marketplace",
+  "version": "1.0.0",
+  "plugins": [
+    {
+      "name": "external-source-a-skills",
+      "source": "./",
+      "external": true,
+      "category": "external",
+      "categories": [
+        "external",
+        "external-skill-set",
+        "external-sync",
+        "operator-development"
+      ],
+      "skills": []
+    }
+  ],
+  "categoryLibrary": {
+    "primaryCategories": {"external": "External"},
+    "roleCategories": {"external-skill-set": "External skill set"},
+    "capabilityCategories": {
+      "external-sync": "External sync",
+      "operator-development": "Operator development"
+    }
+  }
+}
+""",
+        encoding="utf-8",
+    )
+    source = ExternalSource(name="source-a", url="https://example.com/a.git")
+    skill_dir = tmp_path / "external" / "source-a" / "operator-dev"
+    write_skill(skill_dir, "external-source-a-operator-dev")
+
+    update_marketplace(
+        [(Skill("operator-dev", skill_dir, source, True), "abc123")],
+        marketplace_path=str(marketplace_path),
+    )
+
+    updated = json.loads(marketplace_path.read_text(encoding="utf-8"))
+    external_entry = updated["plugins"][0]
+    assert "operator-development" in external_entry["categories"]
+
+
+def test_update_marketplace_adds_category_library_when_creating_file(
+    tmp_path: Path,
+) -> None:
+    marketplace_path = tmp_path / "marketplace.json"
+    source = ExternalSource(name="source-a", url="https://example.com/a.git")
+    skill_dir = tmp_path / "external" / "source-a" / "skill-one"
+    write_skill(skill_dir, "external-source-a-skill-one")
+
+    update_marketplace(
+        [(Skill("skill-one", skill_dir, source, True), "abc123")],
+        marketplace_path=str(marketplace_path),
+    )
+
+    updated = json.loads(marketplace_path.read_text(encoding="utf-8"))
+    assert "categoryLibrary" in updated
+    assert "external" in updated["categoryLibrary"]["primaryCategories"]

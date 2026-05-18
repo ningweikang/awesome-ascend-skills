@@ -24,7 +24,7 @@ jobs:
       - name: Check frontmatter
         run: |
           echo "=== Checking all SKILL.md files have valid frontmatter ==="
-          find . -name "SKILL.md" | while read f; do
+          find . -name "SKILL.md" ! -path "./tests/fixtures/*" | while read f; do
             echo "Checking: $f"
             # Check YAML frontmatter exists
             if ! head -1 "$f" | grep -q "^---$"; then
@@ -44,35 +44,119 @@ jobs:
           done
           echo "All SKILL.md files have valid frontmatter!"
 
-      - name: Verify skill names match directory names
+      - name: Verify skill names follow repository rules
         run: |
-          echo "=== Verifying skill names match directory names ==="
-          find . -name "SKILL.md" | while read f; do
-            dir=$(dirname "$f")
-            name=$(grep "^name:" "$f" | cut -d: -f2 | tr -d ' ')
-            expected=$(basename "$dir")
-            
-            # For nested skills, name can be either:
-            # 1. Exact match with directory name (e.g., "basic" for "basic/")
-            # 2. Hyphenated path ending with directory name (e.g., "npu-smi-info-basic" for "npu-smi-info/basic/")
-            # This allows both naming conventions for flexibility
-            
-            # Check if name ends with expected directory name (with hyphen prefix or exact match)
-            if [ "$name" = "$expected" ]; then
-              echo "OK: $dir -> name: $name (exact match)"
-            elif [ "$name" = "${name%-*}-$expected" ] || [[ "$name" == *-"$expected" ]]; then
-              echo "OK: $dir -> name: $name (hyphenated, ends with directory name)"
-            else
-              echo "ERROR: Directory '$dir' has name='$name' but expected to end with '$expected'"
-              exit 1
-            fi
-          done
-          echo "All skill names match their directory names!"
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          LOCAL_DOMAIN_DIRS = {
+              'base',
+              'inference',
+              'training',
+              'profiling',
+              'ops',
+              'agent-tools',
+              'ai-for-science',
+          }
+          PREFIX_DOMAIN_DIRS = {'ai-for-science'}
+
+          def parse_name(skill_path: Path) -> str:
+              content = skill_path.read_text(encoding='utf-8')
+              match = re.search(r'^name:\s*(.+)$', content, re.MULTILINE)
+              return match.group(1).strip() if match else ''
+
+          def validate_name(skill_path: Path, actual_name: str) -> str | None:
+              rel_parts = skill_path.parts
+
+              if '.agents' in rel_parts:
+                  expected_name = rel_parts[-2]
+                  if actual_name != expected_name:
+                      return (
+                          f"Agent skill name '{actual_name}' doesn't match directory '{expected_name}' "
+                          f"(file: {skill_path})"
+                      )
+                  return None
+
+              if rel_parts[0] == 'external':
+                  expected_prefix = f'external-{rel_parts[1]}-'
+                  if not actual_name.startswith(expected_prefix):
+                      return (
+                          f"External skill name '{actual_name}' should start with '{expected_prefix}' "
+                          f"(file: {skill_path})"
+                      )
+                  return None
+
+              if rel_parts[0] != 'skills':
+                  return (
+                      'Local skills must live under skills/<domain>/...; '
+                      f'found local SKILL.md outside skills/ (file: {skill_path})'
+                  )
+
+              if len(rel_parts) < 4:
+                  return (
+                      'Invalid local skill path under skills/: expected '
+                      f'skills/<domain>/<skill>/SKILL.md (file: {skill_path})'
+                  )
+
+              domain = rel_parts[1]
+              if domain not in LOCAL_DOMAIN_DIRS:
+                  return (
+                      f"Unknown local skill domain '{domain}' under skills/ "
+                      f"(file: {skill_path})"
+                  )
+
+              expected_name = rel_parts[-2]
+              is_leaf = len(rel_parts) == 4
+
+              if is_leaf:
+                  if domain in PREFIX_DOMAIN_DIRS:
+                      expected_prefix = f'{domain}-'
+                      if not actual_name.startswith(expected_prefix):
+                          return (
+                              f"Local skill name '{actual_name}' should start with '{expected_prefix}' "
+                              f"(file: {skill_path})"
+                          )
+                      return None
+                  if actual_name != expected_name:
+                      return (
+                          f"Local skill name '{actual_name}' doesn't match directory '{expected_name}' "
+                          f"(file: {skill_path})"
+                      )
+                  return None
+
+              prefix_folder = domain if domain in PREFIX_DOMAIN_DIRS else rel_parts[2]
+              expected_prefix = f'{prefix_folder}-'
+              if not actual_name.startswith(expected_prefix):
+                  return (
+                      f"Nested skill name '{actual_name}' should start with '{expected_prefix}' "
+                      f"(file: {skill_path})"
+                  )
+              return None
+
+          repo_root = Path('.')
+          skill_files = [
+              f
+              for f in repo_root.glob('**/SKILL.md')
+              if '.worktrees' not in f.parts and f.parts[:2] != ('tests', 'fixtures')
+          ]
+
+          print('=== Verifying skill names follow repository rules ===')
+          for skill_path in sorted(skill_files):
+              actual_name = parse_name(skill_path)
+              rel_skill_path = skill_path.relative_to(repo_root)
+              error = validate_name(rel_skill_path, actual_name)
+              if error:
+                  raise SystemExit(error)
+              print(f"OK: {rel_skill_path} -> name: {actual_name}")
+
+          print('All skill names follow repository rules!')
+          PY
 
       - name: Check for broken internal links
         run: |
           echo "=== Checking for broken internal links ==="
-          find . -name "SKILL.md" | while read f; do
+          find . -name "SKILL.md" ! -path "./tests/fixtures/*" | while read f; do
             dir=$(dirname "$f")
             # Extract relative links like [text](../path/)
             grep -oE '\]\([^)]+\.md\)' "$f" | tr -d '[]()' | while read link; do
@@ -84,3 +168,62 @@ jobs:
             done
           done
           echo "Link check complete!"
+
+      - name: Check governance references and onboarding tree
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          repo = Path('.')
+          required_files = {
+              'README.md': repo / 'README.md',
+              'PR template': repo / '.github' / 'PULL_REQUEST_TEMPLATE.md',
+              'Governance doc': repo / 'docs' / 'governance' / 'skill-governance.md',
+              'Skill feedback template': repo / '.github' / 'ISSUE_TEMPLATE' / 'skill-feedback.yml',
+          }
+
+          for label, path in required_files.items():
+              if not path.exists():
+                  raise SystemExit(f'Missing required file for governance flow: {label} -> {path}')
+
+          readme = (repo / 'README.md').read_text(encoding='utf-8')
+          pr_template = (repo / '.github' / 'PULL_REQUEST_TEMPLATE.md').read_text(encoding='utf-8')
+          governance = (repo / 'docs' / 'governance' / 'skill-governance.md').read_text(encoding='utf-8')
+
+          readme_checks = [
+              'Start',
+              'ascend-base',
+              'ascend-inference',
+              'ascend-training',
+              'ascend-profiling',
+              'ascend-ops',
+              'ascend-ai-for-science',
+              'skills/README.md',
+              'docs/governance/skill-governance.md',
+              '.github/ISSUE_TEMPLATE/skill-feedback.yml',
+          ]
+          for token in readme_checks:
+              if token not in readme:
+                  raise SystemExit(f'README is missing required governance/onboarding token: {token}')
+
+          pr_checks = [
+              '### 治理规则检查',
+              'docs/governance/skill-governance.md',
+              'decision tree',
+          ]
+          for token in pr_checks:
+              if token not in pr_template:
+                  raise SystemExit(f'PR template is missing required governance checklist token: {token}')
+
+          governance_checks = [
+              '## 2. Skill Taxonomy',
+              '## 8. Governance Checklist',
+              'skills/<domain>/...',
+              'decision tree / Quick Start',
+          ]
+          for token in governance_checks:
+              if token not in governance:
+                  raise SystemExit(f'Governance doc is missing expected section/token: {token}')
+
+          print('Governance references and onboarding tree look good!')
+          PY

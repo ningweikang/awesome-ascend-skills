@@ -22,8 +22,15 @@ Skill 名称：
 
 提交 PR 前，请确认以下检查项已完成：
 
+### 治理规则检查
+- [ ] 已阅读 `docs/governance/skill-governance.md`
+- [ ] 已明确本次变更属于哪个功能域（base / inference / training / profiling / ops / agent-tools / ai-for-science）
+- [ ] 已明确本次变更是 bundle / domain skill set / leaf / router / external 哪一类
+- [ ] 如为本地 skill，目录位于 `skills/<domain>/...`
+- [ ] 如与其他 bundle 或 skill 容易混淆，已补充“怎么选”的边界说明
+
 ### SKILL.md 格式检查
-- [ ] `name` 字段与目录名完全匹配
+- [ ] `name` 字段与叶子目录名匹配，或符合 nested / `ai-for-science` 命名规则
 - [ ] `description` 字段不少于 20 个字符
 - [ ] frontmatter 格式正确（以 `---` 开头和结尾）
 - [ ] 包含 `description` 字段用于 Agent 匹配
@@ -36,7 +43,9 @@ Skill 名称：
 
 ### 仓库更新检查
 - [ ] 已添加到 `.claude-plugin/marketplace.json`
-- [ ] 已更新 `README.md` 中的 Skill 列表（如适用）
+- [ ] 已更新 `README.md` 中对应的导航 / 安装入口 / decision tree（如适用）
+- [ ] 如涉及开发目录导航，已同步更新 `skills/README.md` 或对应 `skills/<domain>/README.md`
+- [ ] 如变更治理规则，已同步更新 `docs/governance/skill-governance.md`
 
 ---
 
@@ -52,7 +61,7 @@ python3 scripts/validate_skills.py
 # 检查 frontmatter
 find . -name "SKILL.md" -exec head -5 {} \; -print
 
-# 检查 name 字段是否匹配目录名
+# 检查 name 字段与目录/命名规则是否一致
 find . -name "SKILL.md" | while read f; do
   dir=$(dirname "$f")
   name=$(grep "^name:" "$f" | cut -d: -f2 | tr -d ' ')
@@ -87,8 +96,9 @@ done
 提交 PR 后将自动运行以下检查：
 1. **Validate SKILL.md files** - 验证所有 SKILL.md 文件格式
 2. **Check frontmatter** - 检查 frontmatter 完整性
-3. **Verify skill names** - 验证 name 字段与目录名匹配
+3. **Verify skill names** - 验证 name 字段与目录/命名规则匹配
 4. **Check for broken internal links** - 检查内部链接是否损坏
+5. **Check governance references** - 检查治理文档、README 与 PR 模板的关键引用是否存在
 
 ---
 

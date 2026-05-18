@@ -182,11 +182,11 @@ WITH comm_view AS (
 
 ```sql
 WITH dispatch_view AS (
-    SELECT 
-        ROUND(t.endNs - t.startNs) AS task_duration_ns, 
-        ROUND(c.endNs - c.startNs) AS cann_duration_ns, 
+    SELECT
+        ROUND(t.endNs - t.startNs) AS task_duration_ns,
+        ROUND(c.endNs - c.startNs) AS cann_duration_ns,
         ROUND(p.endNs - p.startNs) AS pytorch_duration_ns,
-        c_str.value AS cann_api_name, 
+        c_str.value AS cann_api_name,
         p_str.value AS pytorch_api_name,
         t_str.value AS task_type
     FROM TASK t
