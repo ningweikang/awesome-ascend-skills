@@ -138,7 +138,7 @@ npx skills add https://github.com/ascend-ai-coding/awesome-ascend-skills -s '*'
 |------|------|------|
 | `ascend-base` | 所有新同学 | 基础环境、服务器连接、容器环境、设备检查、硬件诊断、虚拟化与 PyTorch NPU 基础能力 |
 | `ascend-inference` | 推理、模型转换、服务部署 | ATC、vLLM-Ascend、vLLM 服务部署、在线压测、ais-bench、量化、Diffusers、Wan 适配 |
-| `ascend-training` | 训练、通信、MindSpeed-LLM、MindSpeed-MM、VERL | HCCL、torch 通信测试、MindSpeed-LLM/MM 全流程、VERL quickstart |
+| `ascend-training` | 训练、通信、MindSpeed-LLM、MindSpeed-MM、VERL | HCCL、torch 通信测试、MindSpeed-LLM/MM 全流程、VERL quickstart、VERL msprobe 精度采集 |
 | `ascend-profiling` | Profiling 采集、性能分析 | Profiling 分析、训练 Profiling 采集、MFU 分析 |
 | `ascend-ops` | 算子开发、迁移、调优 | AscendC、op-plugin、Triton-Ascend 迁移、算子基准测试 |
 | `ascend-ai-for-science` | AI for Science 专项用户 | AI for Science 总入口及其子技能 |
@@ -214,7 +214,7 @@ cp -r awesome-ascend-skills/skills/ops/npu-op-benchmark your-project/.agents/ski
 |------|------|------|
 | `ascend-base` | 官方推荐安装包 | 基础环境、服务器连接、容器、设备、硬件诊断、虚拟化与 PyTorch NPU 基础能力 |
 | `ascend-inference` | 官方推荐安装包 | 推理、模型转换、量化、服务部署、在线压测、Diffusers、Wan 适配 |
-| `ascend-training` | 官方推荐安装包 | 通信测试、MindSpeed-LLM/MM 训练流程、VERL quickstart |
+| `ascend-training` | 官方推荐安装包 | 通信测试、MindSpeed-LLM/MM 训练流程、VERL quickstart、VERL msprobe 精度采集 |
 | `ascend-profiling` | 官方推荐安装包 | Profiling 采集、性能分析、MFU 分析 |
 | `ascend-ops` | 官方推荐安装包 | AscendC、op-plugin、Triton-Ascend 迁移、算子调优 |
 | `ascend-ai-for-science` | 官方推荐安装包 | AI for Science 总入口与子能力 |
@@ -260,6 +260,7 @@ cp -r awesome-ascend-skills/skills/ops/npu-op-benchmark your-project/.agents/ski
 | [mindspeed-llm-skills](skills/training/mindspeed-llm/mindspeed-llm-pipeline/SKILL.md) | MindSpeed-LLM 环境搭建、数据预处理、权重转换、训练启动 |
 | [mindspeed-mm-skills](skills/training/mindspeed-mm/mindspeed-mm-pipeline/SKILL.md) | MindSpeed-MM 多模态训练：环境、权重、VLM、生成模型与端到端流水线 |
 | [verl-quickstart](skills/training/verl-quickstart/SKILL.md) | VERL 强化学习 quickstart：镜像选择、数据预处理、模型路径、PPO/GRPO 训练脚本 |
+| [rl-msprobe](skills/training/rl-msprobe/SKILL.md) | VERL msprobe 精度采集：训练 profiler、推理 vLLM/SGLang dump、训推一致性 |
 | [training-mfu-calculator](skills/profiling/training-mfu-calculator/SKILL.md) | 大模型训练 MFU 计算、FLOPs 分析与性能报告 |
 
 ### Profiling 与性能分析

@@ -3,7 +3,7 @@ window.SKILLS_APP_DATA = {
   "defaultBranch": "main",
   "generatedBy": "web/scripts/build_web_data.py",
   "stats": {
-    "skillCount": 125,
+    "skillCount": 126,
     "bundleCount": 14,
     "categoryCounts": {
       "agent-tools": 5,
@@ -13,7 +13,7 @@ window.SKILLS_APP_DATA = {
       "inference": 10,
       "ops": 4,
       "profiling": 6,
-      "training": 13
+      "training": 14
     },
     "sourceCounts": {
       "agent-tools": 5,
@@ -3861,6 +3861,42 @@ window.SKILLS_APP_DATA = {
         "verl-quickstart"
       ],
       "body": "# VERL RL Quickstart\n\n最小可跑的 VERL 强化学习流程（Ascend/NPU 友好）。\n\n## 强约束\n\n- 镜像版本 `IMAGE_TAG`：\n  - 用户/运维已指定：必须使用其值\n  - 未指定默认：\n    - 910B: `verl-8.5.0-910b-ubuntu22.04-py3.11-v0.7.1`\n    - A3: `verl-8.5.0-a3-ubuntu22.04-py3.11-v0.7.1`\n  - 也可在 Quay tags 自选：`https://quay.io/repository/ascend/verl?tab=tags&tag=latest`\n- 修改或新建 `examples/**/run_*.sh` 后，除非用户明确说“只写不跑”，必须执行一次冒烟（至少 `trainer.total_epochs=1 trainer.test_freq=1`），并返回日志绝对路径与 `tail -f` 命令。\n- 使用 **Megatron** 训练后端时，`use_flash_attn=True` 作为默认参数必须开启（至少 actor 侧开启；若 ref 侧未继承则显式补齐）。\n\n## 最小输入变量\n\n- `IMAGE_REPO=quay.io/ascend/verl`\n- `IMAGE_TAG`（按上面规则）\n- `ASCEND_HW`（可选：`a3|910b`，用于默认选 tag）\n- `TRAIN_BACKEND`（可选：`fsdp|megatron`，**默认 `fsdp`**；根据用户诉求选择）\n- `WORKSPACE=$(pwd)`、`EXAMPLES_DIR=$WORKSPACE/examples`\n- `DATA_DIR=$HOME/data/gsm8k`\n- `MODEL_PATH=<绝对路径，且末级目录为具体模型名>`\n- `NGPUS=1`、`NNODES=1`、`LOG=verl_run.log`\n- `SCRIPT_QUERY`（可选）、`HF_ENDPOINT`（可选）\n\n## 执行步骤\n\n0. Preflight: 检查是否有进程占用 NPU（必要时先释放）\n\n```bash\n# 列出占用 NPU 的进程（PID/进程名/显存）\n/usr/local/sbin/npu-smi info\n\n# 如果看到有进程占卡，先确认是否为你自己的训练/推理任务；\n# 建议先“优雅退出”，不行再 kill：\nkill <PID>\nsleep 3\n/usr/local/sbin/npu-smi info\n\n# 仍未退出再强杀（谨慎使用）\nkill -9 <PID>\n```\n\n1. Step 0: 环境/镜像  \n   参考 `references/docker-ascend.md`\n2. Step 1: 数据处理（生成 parquet）  \n   参考 `references/data-preprocess.md`\n3. Step 2: 模型准备（ModelScope + 路径规范）  \n   参考 `references/model-download.md`\n4. Step 3A: `main_ppo` 训练（按后端选择）  \n   - **默认 FSDP**：适合多数场景，参考 `references/main-ppo-quickstart.md` 的 FSDP 示例  \n   - **Megatron**：当用户明确要求或大模型/并行策略需要时选择，参考同文件的 Megatron 示例\n     - 默认追加：`+actor_rollout_ref.actor.megatron.override_transformer_config.use_flash_attn=True`\n     - 若 ref 侧未继承该配置，再追加：`++actor_rollout_ref.ref.megatron.override_transformer_config.use_flash_attn=True`（已存在该 key 时不要用单 `+`）。\n5. Step 3B: examples 脚本训练与冒烟  \n   参考 `references/examples-scripts.md`\n6. Step 4: checkpoint 合并  \n   参考 `references/checkpoint-merge.md`\n7. FAQ / 排障  \n   参考 `references/faq.md`"
+    },
+    {
+      "name": "rl-msprobe",
+      "displayName": "rl-msprobe",
+      "originalName": "",
+      "title": "verl msprobe 精度数据采集",
+      "description": "自动化 verl msprobe 精度数据采集；开始前检查/预装 msprobe（pip install mindstudio-probe）。自动识别三种模式：(1) 训练采集——global_profiler + precision_debugger stages；(2) 推理采集——vLLM/SGLang rollout dump；(3) 训推一致性——engine patch + PROMPTS_ONLY。触发词：verl dump、msprobe、mindstudio-probe、训练采集、推理采集、训推一致性、PrecisionDebugger。",
+      "category": "training",
+      "source": "training",
+      "path": "skills/training/rl-msprobe",
+      "skillFile": "skills/training/rl-msprobe/SKILL.md",
+      "githubUrl": "https://github.com/ascend-ai-coding/awesome-ascend-skills/blob/main/skills/training/rl-msprobe/SKILL.md",
+      "syncedFrom": "",
+      "referenceCount": 9,
+      "scriptCount": 8,
+      "keywords": [
+        "dump",
+        "engine",
+        "global_profiler",
+        "install",
+        "mindstudio-probe",
+        "msprobe",
+        "patch",
+        "pip",
+        "precision_debugger",
+        "precisiondebugger",
+        "prompts_only",
+        "rl-msprobe",
+        "rollout",
+        "sglang",
+        "stages",
+        "training",
+        "verl",
+        "vllm"
+      ],
+      "body": "# verl msprobe 精度数据采集\n\n自动识别并执行三类 msprobe 采集。**最先检查 msprobe 环境**，再判定采集模式。\n\n## 前置：msprobe 环境（必做）\n\n三种模式（training / inference / consistency）均依赖 **msprobe**。在改脚本、patch 或启动训练**之前**执行：\n\n```bash\nbash scripts/ensure-msprobe-env.sh\n```\n\n| 项 | 说明 |\n|----|------|\n| PyPI 包名 | `mindstudio-probe` |\n| Python import | `from msprobe.pytorch import PrecisionDebugger` |\n| 环境 | 与 **verl 训练/推理同一 Python**（容器内请在容器里执行） |\n| 自动安装 | 脚本默认执行 `pip install mindstudio-probe` |\n| 仅检测 | `bash scripts/ensure-msprobe-env.sh --no-install` |\n\n**安装失败时**：停止后续 dump 配置，提示用户自行安装并校验：\n\n```bash\npip install mindstudio-probe\npython3 -c \"from msprobe.pytorch import PrecisionDebugger; print('OK')\"\n```\n\n未通过环境检查前，不要进入路径 A/B/C。\n\n默认 verl 源码：`VERL_ROOT=/home/zhouyang/skill/verl`（**以用户实际训练/容器内使用的 verl 树为准**，可能与默认路径不同）\n\n| 模式 | 标识 | 改源码 | 后端差异 |\n|------|------|--------|----------|\n| **training** 训练采集 | `global_profiler` + `stages` 三阶段 | 否 | FSDP/Megatron 共用 |\n| **inference** 推理 rollout | `dump_config_path` / `msprobe_dump_config` | SGLang<0.5.11 需改 SGLang | **vLLM / SGLang** |\n| **consistency** 训推一致性 | 训练 engine patch + 推理 dump + PROMPTS_ONLY | 是（verl engine + 可选 vLLM dispatch） | 训练 FSDP/Megatron + 推理 vLLM/SGLang |\n\n**共用强约束（推理相关）**：`actor_rollout_ref.rollout.enforce_eager=True`（不开图模式）。\n\n**共用 config.json 规范**：所有 msprobe `config.json` **优先使用 `\"level\": \"mix\"`**（L0 模块级 + L1 API 级混合采集）。用户未指定 level 时默认 `mix`；仅在明确只要 L0/L1 单粒度时才改。\n\n---\n\n## 第 0 步：识别采集模式\n\n```bash\nbash scripts/detect-dump-mode.sh \"$TRAINING_SCRIPT\" \"$USER_HINT\"\n# 输出: training | inference | consistency | unknown\n```\n\n| 信号 | 模式 |\n|------|------|\n| 「推理采集」「rollout dump」「generate dump」 | inference |\n| 「训推一致」「prefill 对齐」 | consistency |\n| 「训练采集」「global_profiler」「precision_debugger」 | training |\n| 提及 `actor_compute_log_prob` / `ref_compute_log_prob` / `actor_update` 任一 stage | training |\n| 脚本含 `global_profiler.tool=precision_debugger` 或 `precision_debugger.stages` | training |\n| 脚本含 `dump_config_path` / `msprobe_dump_config` | inference |\n| 脚本含 `DUMP_ON` + `PROMPTS_ONLY` | consistency |\n\n无法判定时询问用户选 **A 训练 / B 推理 / C 训推一致**。\n\n训练采集（路径 A）按以下 **三个 stage** 分别获取 dump 数据（通过 `global_profiler.global_tool_config.precision_debugger.stages` 选择子集或全部）：\n\n| stage | 角色 | 采集内容 |\n|-------|------|----------|\n| `actor_compute_log_prob` | actor | actor 前向 log prob |\n| `ref_compute_log_prob` | ref | ref 前向 log prob |\n| `actor_update` | actor | actor 策略更新（前向+反向） |\n\n默认三阶段全采；用户可只指定其中一部分，但须同步开启对应 role 的 `profiler.enable`。\n\n---\n\n## 路径 A：训练采集（training）\n\n> 详细说明：[references/training-profiler-dump.md](references/training-profiler-dump.md)\n\n训练侧数据按 **stage** 粒度采集，核心三阶段为 `actor_compute_log_prob`、`ref_compute_log_prob`、`actor_update`。每个 stage 在 `{save_path}/step_{global_step}/{stage}/step0/rank0/dump.json` 独立落盘。\n\n### 配置要点\n\n```bash\nglobal_profiler.tool=precision_debugger \\\nglobal_profiler.steps='[1,2]' \\\nglobal_profiler.save_path=outputs/profile \\\n+global_profiler.global_tool_config.precision_debugger.config_path=/path/to/config.json \\\n+global_profiler.global_tool_config.precision_debugger.stages='[actor_compute_log_prob,ref_compute_log_prob,actor_update]' \\\nactor_rollout_ref.actor.profiler.enable=True \\\nactor_rollout_ref.ref.profiler.enable=True\n```\n\n- `stages` 决定采哪几个阶段；省略时 verl 默认不限制（建议显式列出）\n- 只采 `actor_compute_log_prob` + `actor_update` 时，ref 的 `profiler.enable` 可关\n- 不改 verl 源码；**禁止**在 config.json 设 `dump_path`\n- `config.json` 中 **`\"level\": \"mix\"`**（默认推荐，见上方共用规范）\n- 校验：`python3 scripts/check-training-profiler.py run_profiler_*.sh`\n\n---\n\n## 路径 B：推理采集（inference）\n\n> vLLM：[references/inference-vllm-dump.md](references/inference-vllm-dump.md)  \n> SGLang：[references/inference-sglang-dump.md](references/inference-sglang-dump.md)\n\n### B0. 识别 rollout 后端\n\n```bash\nbash scripts/detect-rollout-backend.sh \"$TRAINING_SCRIPT\"\n# vllm | sglang | unknown\n```\n\n### B1. 公共前置\n\n```bash\nexport TORCHDYNAMO_DISABLE=1   # 推荐\nactor_rollout_ref.rollout.enforce_eager=True   # 必须\n```\n\n### B2. vLLM（两步即可，不改 verl 源码）\n\n**① config.json**（须含 `dump_path`）：\n\n```json\n{\n  \"task\": \"statistics\",\n  \"dump_path\": \"/path/to/dump/generate\",\n  \"rank\": [],\n  \"step\": [0],\n  \"level\": \"mix\",\n  \"async_dump\": false,\n  \"extra_info\": true,\n  \"statistics\": {\n    \"scope\": [], \"list\": [], \"tensor_list\": [],\n    \"data_mode\": [\"all\"], \"summary_mode\": \"statistics\"\n  }\n}\n```\n\n模板：`assets/config_generate.json.example`\n\n**② 脚本参数**：\n\n```bash\nactor_rollout_ref.rollout.name=vllm \\\nactor_rollout_ref.rollout.enforce_eager=True \\\n++actor_rollout_ref.rollout.engine_kwargs.vllm.additional_config.dump_config_path=\"/path/to/generate_config.json\"\n```\n\n### B3. SGLang（按 msprobe 官方方式）\n\n| SGLang 版本 | 做法 |\n|-------------|------|\n| **>= 0.5.11** | verl 传参：`++actor_rollout_ref.rollout.engine_kwargs.sglang.msprobe_dump_config=/path/to/config.json` |\n| **< 0.5.11** | 按 [sglang_eager_dump_instruct.md](https://gitcode.com/Ascend/msprobe/blob/master/docs/zh/dump/sglang_eager_dump_instruct.md) patch SGLang `ModelRunner` |\n\nverl 侧仍须：\n\n```bash\nactor_rollout_ref.rollout.name=sglang \\\nactor_rollout_ref.rollout.enforce_eager=True\n```\n\nPD 分离：`export SGLANG_ENABLE_HEALTH_ENDPOINT_GENERATION=0`\n\n### B4. 校验与产物\n\n```bash\npython3 scripts/check-inference-dump.py run_infer_dump_*.sh --backend vllm   # 或 sglang\n```\n\n期望：`{dump_path}/step_N/rank_M/dump.json`（vLLM 可能含 `{pid}/` 子目录）\n\n---\n\n## 路径 C：训推一致性（consistency）\n\n= **路径 B 推理侧** + **训练 engine worker patch** + 对齐约束\n\n> **主文档**：[references/consistency-engine-worker.md](references/consistency-engine-worker.md)（legacy megatron → engine worker 迁移）  \n> **辅助 patch**：[references/consistency-auxiliary-patches.md](references/consistency-auxiliary-patches.md)  \n> **对齐约束**：[references/shared-prerequisites.md](references/shared-prerequisites.md)\n\n### C1. 推理侧\n\n按 B2/B3 配置 rollout dump（`enforce_eager=True` 必须）。\n\n**并行对齐（必检）**：\n- **FSDP**：`actor_rollout_ref.rollout.tensor_model_parallel_size` = rollout 占用卡数（如 4 卡 → `gen_tp=4`）；consistency 阶段建议 `data_parallel_size=1`\n- **Megatron**：actor/ref 的 TP/PP/EP 须与 rollout 的 `tensor_model_parallel_size` / `data_parallel_size` / `expert_parallel_size` 逐项一致\n\n详见 [references/shared-prerequisites.md](references/shared-prerequisites.md#训推并行切分对齐consistency-必检)。\n\nvLLM 训推一致推荐 vLLM-Ascend `dispatch_logger` patch（`dispatch_log.jsonl` 关联 prefill step），见 consistency-engine-worker 文档。\n\n### C2. 训练侧\n\n按 FSDP/Megatron patch engine worker + 辅助文件：\n\n- [references/fsdp-engine-patch.md](references/fsdp-engine-patch.md) / [references/megatron-engine-patch.md](references/megatron-engine-patch.md)\n- [references/consistency-auxiliary-patches.md](references/consistency-auxiliary-patches.md)\n\n```bash\nexport DUMP_ON=1 PROMPTS_ONLY=1 TORCHDYNAMO_DISABLE=1 DUMP_PHASE=log_prob\nexport MSPROBE_ACTOR_CONFIG=/path/to/config_actor.json\nbash scripts/detect-train-backend.sh \"$TRAINING_SCRIPT\"\n# engine worker 钩子（transformer_impl.py）\npython3 scripts/check-engine-patch.py --verl-root \"$VERL_ROOT\" --backend \"$TRAIN_BACKEND\"\n# 训推一致全量（PROMPTS_ONLY、request_id、可选 vLLM dispatch）\npython3 scripts/check-consistency-patch.py \\\n  --verl-root \"$VERL_ROOT\" --backend \"$TRAIN_BACKEND\" \\\n  --vllm-ascend-root /path/to/vllm-ascend\n```\n\n**注意**：patch 须打在**实际运行**的 verl 源码树（可能与 `VERL_ROOT` 不同，如 `/verl`）。\n\n### C3. 对齐约束与产物\n\n- **Batch**：`train/mini/micro=1`，`n=DP`（`DP=world_size/SP`）；**优先** `actor_rollout_ref.actor.ulysses_sequence_parallel_size=1` 与 `actor_rollout_ref.ref.ulysses_sequence_parallel_size=1`（即使原脚本 `sp_size>1` 也须在采集脚本覆盖）\n- **并行**：FSDP 推理 `tensor_model_parallel_size` = rollout 卡数；Megatron 训练 TP/PP/EP 与 rollout 逐项一致\n\n见 [references/shared-prerequisites.md](references/shared-prerequisites.md) 与 [references/dump-output-correlation.md](references/dump-output-correlation.md)。\n\n---\n\n## 三模式速查\n\n| 项目 | training | inference | consistency |\n|------|----------|-----------|-------------|\n| config `dump_path` | 禁止 | **必须** | **必须**（generate） |\n| `enforce_eager` | — | **必须 True** | **必须 True** |\n| vLLM 入口 | — | `dump_config_path` | 同 inference |\n| SGLang 入口 | — | `msprobe_dump_config` 或 patch | 同 inference |\n| 改 verl 源码 | 否 | 否（SGLang 旧版改 SGLang） | 是（engine） |\n| 训推并行对齐 | — | — | **FSDP：推理 TP=卡数；Megatron：训练/推理切分一致** |\n| step / stage 控制 | `global_profiler.steps` + `stages` 三阶段 | config `step` / msprobe step | 两侧分别控制 |\n| 训练 stage | `actor_compute_log_prob` / `ref_compute_log_prob` / `actor_update` | — | engine micro_batch |\n\n## 禁止事项\n\n- 禁止在未确认 `msprobe` 可 import 时继续配置或启动 dump\n- 禁止 `enforce_eager=False` 下做推理 dump\n- 禁止未判模式就 patch engine\n- 禁止直接改用户原始训练脚本\n- vLLM 与 SGLang 采集方式**不可混用**\n- consistency 禁止 **FSDP 下 `gen_tp < rollout 卡数`**（推理 dump rank 与训练 rank 无法按卡对齐）\n- consistency 禁止 **Megatron 训练切分与 rollout 切分不一致**（TP/PP/EP 须逐项相同）\n\n## 参考\n\n- 普通训练：[references/training-profiler-dump.md](references/training-profiler-dump.md)（三 stage 采集）\n- vLLM 推理：[references/inference-vllm-dump.md](references/inference-vllm-dump.md)\n- SGLang 推理：[references/inference-sglang-dump.md](references/inference-sglang-dump.md)\n- 训推 engine：[references/consistency-engine-worker.md](references/consistency-engine-worker.md) / [references/fsdp-engine-patch.md](references/fsdp-engine-patch.md) / [references/megatron-engine-patch.md](references/megatron-engine-patch.md)\n- msprobe SGLang：https://gitcode.com/Ascend/msprobe/blob/master/docs/zh/dump/sglang_eager_dump_instruct.md\n- msprobe 异步训推：`msprobe/docs/zh/dump/verl_async_consistency_preprocess_dump.md`"
     }
   ],
   "bundles": [
@@ -3941,6 +3977,7 @@ window.SKILLS_APP_DATA = {
         "mindspeed-llm-weight-prep",
         "mindspeed-llm-training",
         "verl-quickstart",
+        "rl-msprobe",
         "mindspeed-mm-pipeline",
         "mindspeed-mm-env-setup",
         "mindspeed-mm-weight-prep",
@@ -3956,6 +3993,7 @@ window.SKILLS_APP_DATA = {
         "mindspeed-llm-weight-prep",
         "mindspeed-llm-training",
         "verl-quickstart",
+        "rl-msprobe",
         "mindspeed-mm-pipeline",
         "mindspeed-mm-env-setup",
         "mindspeed-mm-weight-prep",

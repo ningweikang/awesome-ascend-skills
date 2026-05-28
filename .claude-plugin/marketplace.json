@@ -61,6 +61,19 @@
       ]
     },
     {
+      "name": "rl-msprobe",
+      "description": "Automates verl msprobe precision dump workflows on Ascend/NPU: training profiler (global_profiler + precision_debugger stages), rollout inference dump (vLLM/SGLang), and train-inference consistency (engine patch + PROMPTS_ONLY). Use when users mention verl dump, msprobe, precision_debugger, rollout dump, or train-inference consistency.",
+      "source": "./skills/training/rl-msprobe",
+      "category": "training",
+      "categories": [
+        "training",
+        "leaf-skill",
+        "reinforcement-learning",
+        "training-workflow",
+        "profiling"
+      ]
+    },
+    {
       "name": "atc-model-converter",
       "description": "Complete toolkit for Huawei Ascend NPU model conversion and end-to-end inference adaptation. Workflow 1 auto-discovers input shapes and parameters from user source code. Workflow 2 exports PyTorch models to ONNX. Workflow 3 converts ONNX to .om via ATC with multi-CANN version support. Workflow 4 adapts the user's full inference pipeline (preprocessing + model + postprocessing) to run end-to-end on NPU. Workflow 5 verifies precision between ONNX and OM outputs. Workflow 6 generates a reproducible README. Supports any standard PyTorch/ONNX model. Use when converting, testing, or deploying models on Ascend AI processors.",
       "source": "./skills/inference/atc-model-converter",
@@ -340,7 +353,7 @@
     },
     {
       "name": "ascend-training",
-      "description": "官方推荐的昇腾训练安装包。适用于分布式训练、通信测试、MindSpeed-LLM、MindSpeed-MM 与 VERL 训练链路，包含 HCCL、torch 通信测试和训练全流程相关 skills。",
+      "description": "官方推荐的昇腾训练安装包。适用于分布式训练、通信测试、MindSpeed-LLM、MindSpeed-MM 与 VERL 训练链路，包含 HCCL、torch 通信测试、VERL quickstart 与 VERL msprobe 精度采集相关 skills。",
       "source": "./",
       "strict": false,
       "skills": [
@@ -352,6 +365,7 @@
         "./skills/training/mindspeed-llm/mindspeed-llm-weight-prep",
         "./skills/training/mindspeed-llm/mindspeed-llm-training",
         "./skills/training/verl-quickstart",
+        "./skills/training/rl-msprobe",
         "./skills/training/mindspeed-mm/mindspeed-mm-pipeline",
         "./skills/training/mindspeed-mm/mindspeed-mm-env-setup",
         "./skills/training/mindspeed-mm/mindspeed-mm-weight-prep",
