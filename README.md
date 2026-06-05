@@ -241,6 +241,7 @@ cp -r awesome-ascend-skills/skills/ops/npu-op-benchmark your-project/.agents/ski
 
 | Skill | 描述 |
 |------|------|
+| [ascend-migration-analysis](skills/inference/ascend-migration-analysis/SKILL.md) | PyTorch 项目 Ascend NPU 迁移可行性分析：扫描 CUDA 依赖，按 7 大域评估，估算迁移工作量 |
 | [atc-model-converter](skills/inference/atc-model-converter/SKILL.md) | ATC 模型转换：ONNX 转 .om 格式、OM 推理、精度对比、YOLO 端到端部署 |
 | [vllm-ascend](skills/inference/vllm-ascend/SKILL.md) | vLLM 推理引擎：离线批推理、OpenAI 兼容 API、量化模型服务、分布式推理 |
 | [vllm-ascend-server](skills/inference/vllm-ascend-server/SKILL.md) | vLLM 推理服务部署：模型发现、量化检测、张量并行、graph/eager 模式、健康检查 |

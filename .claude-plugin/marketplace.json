@@ -194,6 +194,18 @@
       ]
     },
     {
+      "name": "ascend-migration-analysis",
+      "description": "通用 PyTorch 项目 Ascend NPU 迁移可行性分析。系统化扫描代码库中的 CUDA/GPU 依赖，按 7 大域分类评估（设备层、注意力机制、自定义算子、分布式通信、精度策略、第三方依赖、编译加速），并基于 Wan2.2 实际迁移经验提供逐项替代方案。适用于评估任何 DiT/Transformer 类模型（视频生成、LLM、多模态等）在昇腾 NPU 上的运行可行性与迁移工作量估算。",
+      "source": "./skills/inference/ascend-migration-analysis",
+      "category": "inference",
+      "categories": [
+        "inference",
+        "leaf-skill",
+        "pytorch-npu",
+        "model-conversion"
+      ]
+    },
+    {
       "name": "ascendc",
       "description": "AscendC development helper, provides AscendC development environment, compiler, and debugger. Supports C/C++ and Python programming on Ascend NPU. Includes sample code, tutorials, and best practices for AscendC development.",
       "source": "./skills/ops/ascendc",
@@ -340,6 +352,7 @@
       "source": "./",
       "strict": false,
       "skills": [
+        "./skills/inference/ascend-migration-analysis",
         "./skills/inference/atc-model-converter",
         "./skills/inference/vllm-ascend",
         "./skills/inference/ais-bench",

@@ -4,6 +4,7 @@
 
 当前 `skills/inference/` 已承载真实 skill 目录；请按下面链接进入对应 skill 开发：
 
+- [`ascend-migration-analysis/`](ascend-migration-analysis/)：PyTorch 项目 Ascend NPU 迁移可行性分析
 - [`atc-model-converter/`](atc-model-converter/)：ATC 模型转换与 OM 推理
 - [`vllm-ascend/`](vllm-ascend/)：vLLM-Ascend 推理引擎与部署指南
 - [`vllm-ascend-server/`](vllm-ascend-server/)：vLLM 推理服务启动、配置与健康检查
